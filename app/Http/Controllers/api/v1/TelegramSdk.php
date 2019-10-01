@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: asus
- * Date: 9/30/2019
- * Time: 10:23 PM
- */
 
 namespace App\Http\Controllers\api\v1;
 
