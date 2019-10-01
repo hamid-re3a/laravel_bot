@@ -92,7 +92,7 @@ class TelegramSdk
 
     public function savePhoto($file_id, $image_path = "/pics", $file_name = "temp_file.jpg")
     {
-        $url = $this->telegram_url . "/getFile?file_id=$file_id";
+        $url = $this->telegram_url . "getFile?file_id=$file_id";
 
         $result = @file_get_contents($url);
 
@@ -100,7 +100,7 @@ class TelegramSdk
 
         if (isset($result_json['result']['file_path'])) {
 
-            $image_url = $this->telegram_url . $result_json['result']['file_path'];
+            $image_url = $this->telegram_url . '/' . $result_json['result']['file_path'];
             if (!is_dir(public_path() . '/' . $image_path . '/'))
                 mkdir(public_path() . '/' . $image_path . '/', 0777, true);
 
@@ -122,7 +122,7 @@ class TelegramSdk
     public function getUserPhotoFileId($chatId)
     {
 
-        $url = $this->telegram_url . "/getUserProfilePhotos?user_id=$chatId";
+        $url = $this->telegram_url . "getUserProfilePhotos?user_id=$chatId";
         $result = @file_get_contents($url);
         $result_json = json_decode($result, TRUE);
         if (isset($result_json['result']['photos'][0][2]['file_id'])) {
@@ -178,10 +178,10 @@ class TelegramSdk
         );
         $keyboard = json_encode($keyboard, true);
         if ($photo == "") {
-            $url = $this->telegram_url . "/sendmessage?chat_id=$chatId&text=" . urlencode($message)
+            $url = $this->telegram_url . "sendmessage?chat_id=$chatId&text=" . urlencode($message)
                 . "&parse_mode=HTML&reply_markup=$keyboard";
         } else {
-            $url = $this->telegram_url . "/sendPhoto?chat_id=$chatId&photo=" . urlencode($photo) . "&caption=" . urlencode($message)
+            $url = $this->telegram_url . "sendPhoto?chat_id=$chatId&photo=" . urlencode($photo) . "&caption=" . urlencode($message)
                 . "&parse_mode=HTML&reply_markup=$keyboard";
         }
 
@@ -250,14 +250,14 @@ class TelegramSdk
 
         $keyboard = json_encode($keyboard, true);
         if (!is_null($message)) {
-            $url = $this->telegram_url . "/editMessageText?text=" . urlencode($message) . "&message_id=$messageId&chat_id=$chatId&parse_mode=HTML&reply_markup=$keyboard";
+            $url = $this->telegram_url . "editMessageText?text=" . urlencode($message) . "&message_id=$messageId&chat_id=$chatId&parse_mode=HTML&reply_markup=$keyboard";
             @file_get_contents($url);
         } else {
-            $url = $this->telegram_url . "/editMessageReplyMarkup?message_id=$messageId&chat_id=$chatId&parse_mode=HTML&reply_markup=$keyboard";
+            $url = $this->telegram_url . "editMessageReplyMarkup?message_id=$messageId&chat_id=$chatId&parse_mode=HTML&reply_markup=$keyboard";
             @file_get_contents($url);
         }
         if (!is_null($callback_query_id) && isset($popup_message)) {
-            $url = $this->telegram_url . "/AnswerCallbackQuery?callback_query_id=" . $callback_query_id . "&text=" . urlencode($popup_message);
+            $url = $this->telegram_url . "AnswerCallbackQuery?callback_query_id=" . $callback_query_id . "&text=" . urlencode($popup_message);
             @file_get_contents($url);
         }
 
@@ -272,7 +272,7 @@ class TelegramSdk
             'selective' => true
         ];
         $keyboard = json_encode($keyboard, true);
-        $url = $this->telegram_url . "/sendMessage?chat_id=$chatId&text=" . urlencode($message) . "&parse_mode=HTML&reply_markup=$keyboard";
+        $url = $this->telegram_url . "sendMessage?chat_id=$chatId&text=" . urlencode($message) . "&parse_mode=HTML&reply_markup=$keyboard";
         @file_get_contents($url);
     }
 
@@ -280,7 +280,7 @@ class TelegramSdk
     public function sendMessage($chatId, $message)
     {
 
-        $url = $this->telegram_url . "/sendMessage?chat_id=" . urlencode($chatId) . "&text=" . urlencode($message);
+        $url = $this->telegram_url . "sendMessage?chat_id=" . urlencode($chatId) . "&text=" . urlencode($message);
 
         @file_get_contents($url);
     }
