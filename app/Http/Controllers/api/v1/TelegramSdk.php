@@ -24,12 +24,76 @@ class TelegramSdk
     public $latitude = null;
     public $longitude = null;
     public $phone_number = null;
+    public $type = null;
 
     public function __construct($api_key, $chat_id = 68331230)
     {
         $this->api_key = $api_key;
         $this->chat_id = $chat_id;
         $this->telegram_url = "https://api.telegram.org/bot$api_key/";
+    }
+    
+    public function intitilize($update)
+    {
+        $update = json_decode($update, TRUE);
+
+        $this->first_name = null;
+        $this->last_name = null;
+        $this->username = null;
+        $this->photo = null;
+        $this->message = null;
+        $this->message_id = null;
+        $this->latitude = null;
+        $this->longitude = null;
+        $this->phone_number = null;
+
+        if (isset($update['callback_query']["message"]["chat"]["id"])){
+            $this->type = "callback_query";
+            $this->chat_id = $update['callback_query']["message"]["chat"]["id"];
+        }
+        $this->first_name = '';
+        if (isset($update['callback_query']["message"]["chat"]["first_name"]))
+            $this->first_name = $update['callback_query']["message"]["chat"]["first_name"];
+        $this->last_name = '';
+        if (isset($update['callback_query']["message"]["chat"]["last_name"]))
+            $this->last_name = $update['callback_query']["message"]["chat"]["last_name"];
+        $this->username = '';
+        if (isset($update['callback_query']["message"]["chat"]["username"]))
+            $this->username = $update['callback_query']["message"]["chat"]["username"];
+
+        if (isset($update['callback_query']["message"]["message_id"]))
+            $this->message_id = $update['callback_query']["message"]["message_id"];
+
+        if (isset($update["message"]["chat"]["id"])){
+            $this->type = "message";
+            $this->chat_id = $update["message"]["chat"]["id"];
+        }
+
+        if (isset($update["message"]["chat"]["first_name"]))
+            $this->first_name = $update["message"]["chat"]["first_name"];
+
+        if (isset($update["message"]["chat"]["last_name"]))
+            $this->last_name = $update["message"]["chat"]["last_name"];
+
+        if (isset($update["message"]["chat"]["username"]))
+            $this->username = $update["message"]["chat"]["username"];
+
+
+        if (isset($update["message"]["photo"]))
+            $this->photo = $update["message"]["photo"];
+
+        $this->message = '';
+        if (isset($update["message"]["text"]))
+            $this->message = $update["message"]["text"];
+
+        if (isset($update["message"]["location"]["latitude"]))
+            $this->latitude = $update["message"]["location"]["latitude"];
+
+        if (isset($update["message"]["location"]["longitude"]))
+            $this->longitude = $update["message"]["location"]["longitude"];
+
+        if (isset($update["message"]["contact"]["phone_number"]))
+            $this->phone_number = $update["message"]["contact"]["phone_number"];
     }
 
     public function savePhoto($file_id, $image_path = "/pics", $file_name = "temp_file.jpg")
@@ -227,70 +291,4 @@ class TelegramSdk
         @file_get_contents($url);
     }
 
-    public function inputFields($update)
-    {
-        $update = json_decode($update, TRUE);
-
-        $this->first_name = null;
-        $this->last_name = null;
-        $this->username = null;
-        $this->photo = null;
-        $this->message = null;
-        $this->message_id = null;
-        $this->latitude = null;
-        $this->longitude = null;
-        $this->phone_number = null;
-
-        $type = "";
-        if (isset($update['callback_query']["message"]["chat"]["id"])){
-            $type = "callback_query";
-            $this->chat_id = $update['callback_query']["message"]["chat"]["id"];
-        }
-        $this->first_name = '';
-        if (isset($update['callback_query']["message"]["chat"]["first_name"]))
-            $this->first_name = $update['callback_query']["message"]["chat"]["first_name"];
-        $this->last_name = '';
-        if (isset($update['callback_query']["message"]["chat"]["last_name"]))
-            $this->last_name = $update['callback_query']["message"]["chat"]["last_name"];
-        $this->username = '';
-        if (isset($update['callback_query']["message"]["chat"]["username"]))
-            $this->username = $update['callback_query']["message"]["chat"]["username"];
-
-        if (isset($update['callback_query']["message"]["message_id"]))
-            $this->message_id = $update['callback_query']["message"]["message_id"];
-
-        if (isset($update["message"]["chat"]["id"])){
-            $type = "message";
-            $this->chat_id = $update["message"]["chat"]["id"];
-        }
-
-        if (isset($update["message"]["chat"]["first_name"]))
-            $this->first_name = $update["message"]["chat"]["first_name"];
-
-        if (isset($update["message"]["chat"]["last_name"]))
-            $this->last_name = $update["message"]["chat"]["last_name"];
-
-        if (isset($update["message"]["chat"]["username"]))
-            $this->username = $update["message"]["chat"]["username"];
-
-
-        if (isset($update["message"]["photo"]))
-            $this->photo = $update["message"]["photo"];
-
-        $this->message = '';
-        if (isset($update["message"]["text"]))
-            $this->message = $update["message"]["text"];
-
-        if (isset($update["message"]["location"]["latitude"]))
-            $this->latitude = $update["message"]["location"]["latitude"];
-
-        if (isset($update["message"]["location"]["longitude"]))
-            $this->longitude = $update["message"]["location"]["longitude"];
-
-        if (isset($update["message"]["contact"]["phone_number"]))
-            $this->phone_number = $update["message"]["contact"]["phone_number"];
-
-
-        return $type;
-    }
 }

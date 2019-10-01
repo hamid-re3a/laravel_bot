@@ -12,5 +12,6 @@
 */
 
 Route::get('/', function () {
-    return "Reservina";
+    return "dokan";
 });
+Route::post('dokan','TelegramController@dokan');
