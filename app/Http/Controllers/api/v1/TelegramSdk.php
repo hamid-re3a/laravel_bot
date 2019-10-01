@@ -272,7 +272,7 @@ class TelegramSdk
             'selective' => true
         ];
         $keyboard = json_encode($keyboard, true);
-        $url = $this->telegram_url . "/sendmessage?chat_id=$chatId&text=" . urlencode($message) . "&parse_mode=HTML&reply_markup=$keyboard";
+        $url = $this->telegram_url . "/sendMessage?chat_id=$chatId&text=" . urlencode($message) . "&parse_mode=HTML&reply_markup=$keyboard";
         @file_get_contents($url);
     }
 
@@ -280,7 +280,7 @@ class TelegramSdk
     public function sendMessage($chatId, $message)
     {
 
-        $url = $this->telegram_url . "/sendmessage?chat_id=" . urlencode($chatId) . "&text=" . urlencode($message);
+        $url = $this->telegram_url . "/sendMessage?chat_id=" . urlencode($chatId) . "&text=" . urlencode($message);
 
         @file_get_contents($url);
     }
