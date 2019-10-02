@@ -12,7 +12,7 @@ class TelegramController extends ApiController
         $telegram = new TelegramSdk(env('TELEGRAM_DOKAN_API_KEY'));
         $telegram->intitilize($update);
 
-        $telegram->sendMessage($telegram->chat_id,"hello");
+        $telegram->sendMessage(null,"hello");
 
 
 

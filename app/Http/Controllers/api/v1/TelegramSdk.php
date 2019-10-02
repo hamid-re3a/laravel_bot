@@ -7,8 +7,9 @@ class TelegramSdk
 {
     public $api_key = "";
     public $telegram_url = "";
-
     public $chat_id = null;
+    public $admin_chat_id = null;
+
     public $first_name = null;
     public $last_name = null;
     public $username = null;
@@ -23,6 +24,7 @@ class TelegramSdk
     public function __construct($api_key, $chat_id = 68331230)
     {
         $this->api_key = $api_key;
+        $this->admin_chat_id = $chat_id;
         $this->chat_id = $chat_id;
         $this->telegram_url = "https://api.telegram.org/bot$api_key/";
     }
@@ -90,6 +92,8 @@ class TelegramSdk
             $this->phone_number = $update["message"]["contact"]["phone_number"];
     }
 
+
+
     public function savePhoto($file_id, $image_path = "/pics", $file_name = "temp_file.jpg")
     {
         $url = $this->telegram_url . "getFile?file_id=$file_id";
@@ -121,7 +125,9 @@ class TelegramSdk
 
     public function getUserPhotoFileId($chatId)
     {
-
+        if(is_null($chatId)){
+            $chatId = $this->chat_id;
+        }
         $url = $this->telegram_url . "getUserProfilePhotos?user_id=$chatId";
         $result = @file_get_contents($url);
         $result_json = json_decode($result, TRUE);
@@ -137,6 +143,10 @@ class TelegramSdk
 
     public function sendInlineKeyboardMessage($chatId, $message, $photo = "")
     {
+        if(is_null($chatId)){
+            $chatId = $this->chat_id;
+        }
+
         $arg_list = func_get_args();
         $callback_query_index = 3;
         $button_text_index = 4;
@@ -189,8 +199,12 @@ class TelegramSdk
     }
 
 
-    public function updateInlineKeyboardMessage($chatId, $messageId, $message = null, $callback_query_id = null, $popup_message, $column_number = 2)
+    public function updateInlineKeyboardMessage($chatId, $messageId, $message = null, $callback_query_id = null, $popup_message = null, $column_number = 2)
     {
+        if(is_null($chatId)){
+            $chatId = $this->chat_id;
+        }
+
         $arg_list = func_get_args();
         $callback_num = 5;
         $buttonText_num = 6;
@@ -256,7 +270,7 @@ class TelegramSdk
             $url = $this->telegram_url . "editMessageReplyMarkup?message_id=$messageId&chat_id=$chatId&parse_mode=HTML&reply_markup=$keyboard";
             @file_get_contents($url);
         }
-        if (!is_null($callback_query_id) && isset($popup_message)) {
+        if (!is_null($callback_query_id) && !is_null($popup_message) && isset($popup_message)) {
             $url = $this->telegram_url . "AnswerCallbackQuery?callback_query_id=" . $callback_query_id . "&text=" . urlencode($popup_message);
             @file_get_contents($url);
         }
@@ -265,6 +279,10 @@ class TelegramSdk
 
     public function sendKeyboardMessage($chatId, $message, $buttonsArray)
     {
+        if(is_null($chatId)){
+            $chatId = $this->chat_id;
+        }
+
         $keyboard = [
             'keyboard' => $buttonsArray,
             'resize_keyboard' => true,
@@ -279,6 +297,9 @@ class TelegramSdk
 
     public function sendMessage($chatId, $message)
     {
+        if(is_null($chatId)){
+            $chatId = $this->chat_id;
+        }
 
         $url = $this->telegram_url . "sendMessage?chat_id=" . urlencode($chatId) . "&text=" . urlencode($message);
 
