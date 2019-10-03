@@ -5,6 +5,7 @@ namespace App\Http\Controllers\api\v1;
 
 use App\InstagramAccount;
 use App\TelegramUser;
+use Carbon\Carbon;
 
 class TelegramController extends ApiController {
     private static $s_init = "";
@@ -88,7 +89,7 @@ class TelegramController extends ApiController {
                 $tel->sendKeyboardMessage(null, "فرآیند لغو شد.", TelegramController::$init_buttons);
                 return;
             case "/debug":
-                $tel->sendMessage(null, now());
+                $tel->sendMessage(null, Carbon::now());
                 return;
         }
         // Stateful commands
