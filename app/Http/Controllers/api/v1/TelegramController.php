@@ -137,11 +137,11 @@ class TelegramController extends ApiController {
                 } else {
                     $tel_user->state = TelegramController::$s_insta;
                     $tel_user->save();
-                    $msg = "«« *سرویس افزایش فالوور اینستاگرام* »»" . "\nیکی از موارد زیر را انتخاب نمایید:";
+                    $msg = "«« </b>سرویس افزایش فالوور اینستاگرام<b> »»" . "\nیکی از موارد زیر را انتخاب نمایید:";
                     $msg .= "\n - " . TelegramController::$cmd_insta_history;
                     $msg .= "\n - " . TelegramController::$cmd_insta_credit;
                     $msg .= "\n - " . TelegramController::$cmd_insta_extend;
-                    $msg .= "\n";
+                    $msg .= "\n.";
                     $tel->sendKeyboardMessage(null, $msg,
                                               TelegramController::$insta_buttons);
                 }
