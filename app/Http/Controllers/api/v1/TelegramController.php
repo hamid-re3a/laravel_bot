@@ -43,8 +43,8 @@ class TelegramController extends ApiController {
         $tel_user->username = $tel->username;
         $tel_user->first_name = $tel->first_name;
         $tel_user->last_name = $tel->last_name;
-        $tel_user->state = $tel->state;
-        $tel_user->carry = $tel->carry;
+        $tel_user->state = TelegramController::$idleState;
+        $tel_user->carry = "";
         $tel->sendMessage(null, "[DEBUG] TelegramUser saving");
         $tel_user->save();
         return $tel_user;
