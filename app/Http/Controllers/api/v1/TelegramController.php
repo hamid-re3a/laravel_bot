@@ -223,6 +223,7 @@ class TelegramController extends ApiController {
         // Handling commands
         switch ($tel->message) {
             case TelegramController::$cmd_insta_history:
+                $tel->sendMessage(null, "هنوز پیاده‌سازی نشده است.");
                 break;
             case TelegramController::$cmd_insta_credit:
                 $account = InstagramAccount::where("telegram_user_id", $tel_user->telegram_id)->firstOrFail();
