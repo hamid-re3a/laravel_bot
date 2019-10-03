@@ -20,7 +20,7 @@ class CreateUsersTable extends Migration
             $table->string('password');
             $table->boolean('active')->default(false);
             $table->integer('telegram_user_id')->unsigned();
-            $table->foreign('telegram_user_id')->references('id')->on('telegram_users');
+            $table->foreign('telegram_user_id')->references('telegram_id')->on('telegram_users');
             $table->timestamps();
         });
     }

@@ -15,8 +15,8 @@ class CreateSmsOrdersTable extends Migration
     {
         Schema::create('sms_orders', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('user_id')->unsigned();
-            $table->foreign('user_id')->references('id')->on('users');
+            $table->integer('telegram_user_id')->unsigned();
+            $table->foreign('telegram_user_id')->references('telegram_id')->on('telegram_users');
             $table->integer('transaction_id')->unsigned();
             $table->foreign('transaction_id')->references('id')->on('money_transactions');
             $table->integer('number');

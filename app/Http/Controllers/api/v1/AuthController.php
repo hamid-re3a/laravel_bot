@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Validator;
 class AuthController extends ApiController
 {
     private $client_id = 2;
-    private $client_secret = "Kv7McrWHfBRx0e0ce2XBM2GeImPqgVz6iu29Ydbu";
+    private $client_secret = "lnjRca1sFcX2RwkCGxXyFYGs358K2g12VSMT0NOg";
 
     /**
      * @return int

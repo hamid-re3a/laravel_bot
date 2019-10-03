@@ -12,9 +12,13 @@ class CreateTelegramUsersTable extends Migration {
      */
     public function up() {
         Schema::create('telegram_users', function (Blueprint $table) {
-            $table->increments('id');
-            $table->string('telegram_id',100)->unique();
-            $table->string('name');
+            $table->increments('id');            
+            $table->integer('telegram_id')->unsigned()->unique();
+            $table->string('first_name')->nullable();
+            $table->string('last_name')->nullable();
+            $table->string('username')->nullable();
+            $table->string('state', 255)->nullable();
+            $table->string('carry', 2048)->nullable();
             $table->timestamps();
         });
     }

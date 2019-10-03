@@ -15,8 +15,8 @@ class CreateInstagramAccountsTable extends Migration
     {
         Schema::create('instagram_accounts', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('user_id')->unsigned();
-            $table->foreign('user_id')->references('id')->on('users');
+            $table->integer('telegram_user_id')->unsigned();
+            $table->foreign('telegram_user_id')->references('telegram_id')->on('telegram_users');
             $table->string('username',20)->unique();
             $table->string('password')->nullable();
             $table->text('cookie')->nullable();
