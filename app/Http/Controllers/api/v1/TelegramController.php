@@ -81,11 +81,17 @@ class TelegramController extends ApiController {
 
     private function handleMessage($tel) {
         $tel_user = $this->getTelegramUser($tel);
-        if ($tel->message == TelegramController::$cmd_cancel) {
-            $this->resetTelegramUser($tel_user);
-            $tel->sendKeyboardMessage(null, "فرآیند لغو شد.", TelegramController::$init_buttons);
-            return;
+        // Stateless commands
+        switch ($tel->message) {
+            case TelegramController::$cmd_cancel:
+                $this->resetTelegramUser($tel_user);
+                $tel->sendKeyboardMessage(null, "فرآیند لغو شد.", TelegramController::$init_buttons);
+                return;
+            case "/debug":
+                $tel->sendMessage(null, now());
+                return;
         }
+        // Stateful commands
         switch ($tel_user->state) {
             case TelegramController::$s_init:
                 $this->s_init($tel, $tel_user);
