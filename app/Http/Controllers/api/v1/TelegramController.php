@@ -107,7 +107,7 @@ class TelegramController extends ApiController {
 //                $instaAccount->paid_until       = date_default_timezone_get();
                 $instaAccount->save();
                 $this->resetTelegramUser($tel_user);
-                $tel->sendKeyboardMessage(null, "اکانت اینستاگرام با موفقیت ثبت شد.");
+                $tel->sendMessage(null, "اکانت اینستاگرام با موفقیت ثبت شد.");
                 $tel->message = TelegramController::$cmd_insta;
                 $this->s_init($tel, $tel_user);
                 break;
