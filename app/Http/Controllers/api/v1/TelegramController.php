@@ -37,21 +37,28 @@ class TelegramController extends ApiController {
         $tel_user = null;
         $tel->sendMessage(null, "[DEBUG] TelegramUser fetch all:");
         $tel->sendMessage(null, json_encode(TelegramUser::all()));
-        try {
-            $tel_user = TelegramUser::query()->when('telegram_id', $tel->chat_id)->firstOrFail();
-            $tel->sendMessage(null, "[DEBUG] TelegramUser found");
-        } catch (Exception $ex) {
-            $tel->sendMessage(null, "[DEBUG] TelegramUser catch");
-            $tel_user = TelegramUser::Create(
-                [
-                    'telegram_id' => $tel->chat_id,
-                    'username' => $tel->username,
-                    'first_name' => $tel->first_name,
-                    'last_name' => $tel->last_name,
-                    'state' => $tel->state,
-                    'carry' => $tel->carry,
-                ]);
-        }
+//        try {
+//            $tel_user = TelegramUser::query()->when('telegram_id', $tel->chat_id)->firstOrFail();
+//            $tel->sendMessage(null, "[DEBUG] TelegramUser found");
+//        } catch (Exception $ex) {
+//            $tel->sendMessage(null, "[DEBUG] TelegramUser catch");
+//            $tel_user = TelegramUser::Create(
+//                [
+//                    'telegram_id' => $tel->chat_id,
+//                    'username' => $tel->username,
+//                    'first_name' => $tel->first_name,
+//                    'last_name' => $tel->last_name,
+//                    'state' => $tel->state,
+//                    'carry' => $tel->carry,
+//                ]);
+//        }
+        $tel_user = TelegramUser::firstOrCreate(['telegram_id' => $tel->chat_id]);
+        $tel_user->username = $tel->username;
+        $tel_user->first_name = $tel->first_name;
+        $tel_user->last_name = $tel->last_name;
+        $tel_user->state = $tel->state;
+        $tel_user->carry = $tel->carry;
+        $tel_user->save();
         return $tel_user;
     }
 
