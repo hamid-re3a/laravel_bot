@@ -60,12 +60,16 @@ class TelegramController extends ApiController {
         return $tel_user;
     }
 
+    private function resetTelegramUser($tel_user) {
+        $tel_user->state = TelegramController::$s_init;
+        $tel_user->carry = "";
+        $tel_user->save();
+    }
+
     private function handleMessage($tel) {
         $tel_user = $this->getTelegramUser($tel);
         if ($tel->message == TelegramController::$cmd_cancel) {
-            $tel_user->state = TelegramController::$s_init;
-            $tel_user->carry = "";
-            $tel_user->save();
+            $this->resetTelegramUser($tel_user);
             $tel->sendMessage(null, "[DEBUG] Reset done");
             return;
         }
@@ -94,9 +98,9 @@ class TelegramController extends ApiController {
 //                $instaAccount->paid_until       = date_default_timezone_get();
                 $instaAccount->save();
                 $tel->sendMessage(null, "[DEBUG] Insta account created");
-                $tel_user->state = TelegramController::$s_init;
-                $tel_user->save();
-                $tel->message = TelegramController::$s_instaUsername;
+                $this->resetTelegramUser($tel_user);
+                $tel->sendKeyboardMessage(null, "اکانت اینستاگرام با موفقیت ثبت شد.", TelegramController::$cmd_buttons);
+                $tel->message = TelegramController::$cmd_insta;
                 $this->s_init($tel, $tel_user);
                 break;
         }
