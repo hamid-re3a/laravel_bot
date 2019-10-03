@@ -10,10 +10,11 @@ class TelegramController extends ApiController {
     private static $states;
 
     public function dokan() {
-        TelegramController::$states = [];
-        TelegramController::$states->init = "";
-        TelegramController::$states->instaUsername = "instagram_username";
-        TelegramController::$states->instaPassword = "instagram_password";
+        TelegramController::$states = [
+            "init" => "",
+            "instaUsername" => "instagram_username",
+            "instaPassword" => "instagram_password",
+        ];
         try {
             $update   = @file_get_contents("php://input");
             $telegram = new TelegramSdk(env('TELEGRAM_DOKAN_API_KEY'));
