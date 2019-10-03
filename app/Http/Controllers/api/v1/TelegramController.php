@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\api\v1;
 
 
+use App\InstagramAccount;
 use App\TelegramUser;
 
 class TelegramController extends ApiController {
@@ -35,28 +36,21 @@ class TelegramController extends ApiController {
     }
 
     private function getTelegramUser($tel) {
-        $tel_user = null;
-        $tel->sendMessage(null, "[DEBUG] TelegramUser fetch all:");
-        $tel->sendMessage(null, json_encode(TelegramUser::all()));
         $tel_user = TelegramUser::firstOrCreate(['telegram_id' => $tel->chat_id]);
-        $tel->sendMessage(null, "[DEBUG] TelegramUser updating");
         $tel_user->username = $tel->username;
         $tel_user->first_name = $tel->first_name;
         $tel_user->last_name = $tel->last_name;
         $tel_user->state = TelegramController::$idleState;
         $tel_user->carry = "";
-        $tel->sendMessage(null, "[DEBUG] TelegramUser saving");
         $tel_user->save();
         return $tel_user;
     }
 
     private function handleMessage($tel) {
-        $tel->sendMessage(null, "[DEBUG] handleMessage invoked");
         $tel_user = $this->getTelegramUser($tel);
-        $tel->sendMessage(null, "[DEBUG] TelegramUser fetched");
         switch ($tel_user->state) {
             case TelegramController::$idleState:
-                $this->s_idle($tel);
+                $this->s_idle($tel, $tel_user);
                 break;
         }
     }
@@ -65,12 +59,15 @@ class TelegramController extends ApiController {
         $tel->sendMessage(null, "hello");
     }
 
-    private function s_idle($tel) {
-        $tel->sendMessage(null, "[DEBUG] In idle state");
+    private function s_idle($tel, $tel_user) {
+        $instaBtn = "افزایش فالوور اینستاگرام";
+        $smsBtn = "پنل SMS";
+        $helpBtn = "راهنما";
+        $contactBtn = "ارتباط با ادمین";
+        $btns = [[$instaBtn], [$smsBtn], [$helpBtn, $contactBtn]];
         switch ($tel->message) {
             case "/start":
-                $tel->sendKeyboardMessage(null, "به ربات تلگرام دکان خوش آمدید!",
-                                          [["افزایش فالوور اینستاگرام"], ["پنل SMS"], ["راهنما", "ارتباط با ادمین"]]);
+                $tel->sendKeyboardMessage(null, "به ربات تلگرام دکان خوش آمدید!", $btns);
                 break;
             case "/mirror":
                 $info = [
@@ -81,6 +78,13 @@ class TelegramController extends ApiController {
                     "phoneNumber" => $tel->phone_number,
                 ];
                 $tel->sendMessage(null, json_encode($info));
+                break;
+            case $instaBtn:
+                $insta = InstagramAccount::where(["telegram_user_id" => $tel_user->telegram_id]).first();
+                if (is_null($insta))
+                    $tel->sendMessage(null, "You do not have an instagram account");
+                else
+                    $tel->sendMessage(null, json_encode($insta));
                 break;
         }
     }
