@@ -19,11 +19,11 @@ class TelegramController extends ApiController {
     private static $state_sms_contacts_new_mobile = "sms_contacts_new_mobile";
     private static $state_sms_contacts_remove     = "sms_contacts_remove";
 
-    private static $cmd_insta               = "افزایش فالوور اینستاگرام";
+    private static $cmd_insta               = "سرویس افزایش فالوور اینستاگرام";
     private static $cmd_insta_history       = "تاریخچه";
     private static $cmd_insta_credit        = "اعتبار باقیمانده";
     private static $cmd_insta_extend        = "افزایش اعتبار";
-    private static $cmd_sms                 = "پنل SMS";
+    private static $cmd_sms                 = "سرویس ارسال SMS";
     private static $cmd_sms_contacts        = "لیست مشتریان";
     private static $cmd_sms_sendToClients   = "ارسال گروهی برای مشتریان";
     private static $cmd_sms_sendToNear      = "ارسال گروهی برای منطقه";
