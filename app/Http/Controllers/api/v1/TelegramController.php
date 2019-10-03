@@ -39,6 +39,7 @@ class TelegramController extends ApiController {
         $tel->sendMessage(null, json_encode(TelegramUser::all()));
         try {
             $tel_user = TelegramUser::query()->when('telegram_id', $tel->chat_id)->firstOrFail();
+            $tel->sendMessage(null, "[DEBUG] TelegramUser found");
         } catch (Exception $ex) {
             $tel->sendMessage(null, "[DEBUG] TelegramUser catch");
             $tel_user = TelegramUser::Create(
