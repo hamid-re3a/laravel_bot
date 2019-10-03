@@ -268,17 +268,31 @@ class TelegramController extends ApiController {
                 $tel->sendKeyboardMessage(null, "مشتری با موفقیت ثبت شد.",
                                           TelegramController::$btn_sms);
                 return;
+            case TelegramController::$state_sms_contacts_remove:
+                $contact = SmsReceiver::where('mobile', $tel->message)->first();
+                if (is_null($contact)) {
+                    $msg = "مشتری مورد نظر یافت نشد.";
+                } else {
+                    $contact->delete();
+                    $msg = "مشتری مورد نظر حذف.";
+                }
+                $this->resetTelegramUser($tel_user);
+                $tel_user->state = TelegramController::$state_sms;
+                $tel_user->save();
+                $tel->sendKeyboardMessage(null, $msg,
+                                          TelegramController::$btn_sms);
+                return;
         }
         // Handling commands
         switch ($tel->message) {
             case TelegramController::$cmd_sms_contacts:
                 $contacts = SmsReceiver::where('telegram_user_id', $tel_user->telegram_id)->get();
                 if (count($contacts) > 0) {
-                    $msg      = "لیست مشتریان:";
+                    $msg = "لیست مشتریان:";
                     foreach ($contacts as $contact)
                         $msg .= "\n" . $contact->name . ": " . $contact->mobile;
                 } else
-                    $msg      = "هنوز مشتری‌ای ثبت نشده است.";
+                    $msg = "هنوز مشتری‌ای ثبت نشده است.";
                 $tel->sendKeyboardMessage(null, $msg,
                                           TelegramController::$btn_sms_contacts);
                 break;
@@ -295,7 +309,10 @@ class TelegramController extends ApiController {
                                           TelegramController::$btn_cancel);
                 break;
             case TelegramController::$cmd_sms_contacts_remove:
-                $tel->sendMessage(null, "هنوز پیاده‌سازی نشده است.");
+                $tel_user->state = TelegramController::$state_sms_contacts_remove;
+                $tel_user->save();
+                $tel->sendKeyboardMessage(null, "لطفاً شماره همراه مشتری را وارد نمایید:",
+                                          TelegramController::$btn_cancel);
                 break;
         }
     }
