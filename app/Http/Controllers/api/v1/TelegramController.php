@@ -184,10 +184,14 @@ class TelegramController extends ApiController {
                                           TelegramController::$btn_sms);
                 break;
             case TelegramController::$cmd_help:
-                $tel->sendMessage(null, "هنوز پیاده‌سازی نشده است.");
+                $msg = "به ربات تلگرام دکان خوش آمدید" . "\n"
+                       . "این ربات با ارائه خدمات افزایش فالوورهای اینستاگرام و ارسال دسته جمعی SMS به منظور افزایش بهره‌وری کسب و کارها طراحی شده است.";
+                $tel->sendMessage(null, $msg);
                 break;
             case TelegramController::$cmd_contact:
-                $tel->sendMessage(null, "هنوز پیاده‌سازی نشده است.");
+                $msg = "شما می‌توانید از طریق آدرس زیر با مدیران دکان ارتباط برقرار نمایید:"
+                       . "\n" . "@Hamidre3a";
+                $tel->sendMessage(null, $msg);
                 break;
         }
     }
