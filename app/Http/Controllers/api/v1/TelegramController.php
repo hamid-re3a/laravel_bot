@@ -34,20 +34,15 @@ class TelegramController extends ApiController {
     }
 
     private function getTelegramUser($tel) {
-        $tel_user = new TelegramUser();
-        try {
-            $tel_user = TelegramUser::query()->when('telegram_id', $tel->chat_id)->firstOrFail();
-        } catch (Exception $e) {
-            $tel->sendMessage(null, "[DEBUG] TelegramUser fetch failed");
-            $tel_user->telegram_id = $tel->chat_id;
-            $tel_user->username    = $tel->username;
-            $tel_user->first_name  = $tel->first_name;
-            $tel_user->last_name   = $tel->last_name;
-            $tel_user->state       = TelegramController::$idleState;
-            $tel_user->carry       = "";
-            $tel_user->save();
-            $tel->sendMessage(null, "[DEBUG] TelegramUser saved");
-        }
+        $tel_user = TelegramUser::query()->when('telegram_id', $tel->chat_id)->firstOrCreate(
+            [
+                'telegram_id' => $tel->chat_id,
+                'username' => $tel->username,
+                'first_name' => $tel->first_name,
+                'last_name' => $tel->last_name,
+                'state' => $tel->state,
+                'carry' => $tel->carry,
+            ]);
         return $tel_user;
     }
 
