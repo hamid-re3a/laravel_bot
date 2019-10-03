@@ -13,12 +13,16 @@ class TelegramController extends ApiController {
     private static $s_insta_username = "instagram_username";
     private static $s_insta_password = "instagram_password";
     private static $s_insta_extend = "instagram_extend";
+    private static $s_sms = "sms";
 
     private static $cmd_insta = "افزایش فالوور اینستاگرام";
     private static $cmd_insta_history = "تاریخچه";
     private static $cmd_insta_credit = "اعتبار باقیمانده";
     private static $cmd_insta_extend = "افزایش اعتبار";
     private static $cmd_sms = "پنل SMS";
+    private static $cmd_sms_contacts = "لیست مشتریان";
+    private static $cmd_sms_sendToClients = "ارسال گروهی برای مشتریان";
+    private static $cmd_sms_sendToNear = "ارسال گروهی برای منطقه";
     private static $cmd_help = "راهنما";
     private static $cmd_contact = "ارتباط با ادمین";
     private static $cmd_cancel = "انصراف";
@@ -26,6 +30,7 @@ class TelegramController extends ApiController {
     private static $init_buttons = [];
     private static $cancel_button = [];
     private static $insta_buttons = [];
+    private static $sms_buttons = [];
 
     public function dokan() {
         try {
@@ -35,6 +40,10 @@ class TelegramController extends ApiController {
             TelegramController::$insta_buttons = [[TelegramController::$cmd_insta_history,
                                                    TelegramController::$cmd_insta_credit],
                                                   [TelegramController::$cmd_insta_extend,
+                                                   TelegramController::$cmd_cancel]];
+            TelegramController::$sms_buttons   = [[TelegramController::$cmd_sms_contacts,
+                                                   TelegramController::$cmd_sms_sendToClients],
+                                                  [TelegramController::$cmd_sms_sendToNear,
                                                    TelegramController::$cmd_cancel]];
 
             $update   = @file_get_contents("php://input");
@@ -103,13 +112,17 @@ class TelegramController extends ApiController {
             case TelegramController::$s_insta:
             case TelegramController::$s_insta_username:
             case TelegramController::$s_insta_password:
+            case TelegramController::$s_insta_extend:
                 $this->s_insta($tel, $tel_user);
+                break;
+            case TelegramController::$s_sms:
+                $this->s_sms($tel, $tel_user);
                 break;
         }
     }
 
     private function handleCallbackQuery($tel) {
-        $tel->sendMessage(null, "hello");
+        $tel->sendMessage(null, "خطای نامشخص");
     }
 
     private function s_init($tel, $tel_user) {
@@ -138,13 +151,24 @@ class TelegramController extends ApiController {
                     $tel_user->state = TelegramController::$s_insta;
                     $tel_user->save();
                     $msg = "«« سرویس افزایش فالوور اینستاگرام »»" . "\nیکی از موارد زیر را انتخاب نمایید:";
-                    $msg .= "\n - " . TelegramController::$cmd_insta_history;
-                    $msg .= "\n - " . TelegramController::$cmd_insta_credit;
-                    $msg .= "\n - " . TelegramController::$cmd_insta_extend;
+                    $msg .= "\n ‣ " . TelegramController::$cmd_insta_history;
+                    $msg .= "\n ‣ " . TelegramController::$cmd_insta_credit;
+                    $msg .= "\n ‣ " . TelegramController::$cmd_insta_extend;
                     $msg .= "\n.";
                     $tel->sendKeyboardMessage(null, $msg,
                                               TelegramController::$insta_buttons);
                 }
+                break;
+            case TelegramController::$cmd_sms:
+                $tel_user->state = TelegramController::$s_sms;
+                $tel_user->save();
+                $msg = "«« سرویس ارسال SMS »»" . "\nیکی از موارد زیر را انتخاب نمایید:";
+                $msg .= "\n ‣ " . TelegramController::$cmd_sms_contacts;
+                $msg .= "\n ‣ " . TelegramController::$cmd_sms_sendToClients;
+                $msg .= "\n ‣ " . TelegramController::$cmd_sms_sendToNear;
+                $msg .= "\n.";
+                $tel->sendKeyboardMessage(null, $msg,
+                                          TelegramController::$sms_buttons);
                 break;
         }
     }
@@ -173,6 +197,9 @@ class TelegramController extends ApiController {
                 $tel->message = TelegramController::$cmd_insta;
                 $this->s_init($tel, $tel_user);
                 return;
+            case TelegramController::$s_insta_extend:
+                $tel->sendMessage(null, "هنوز پیاده‌سازی نشده است.");
+                return;
         }
         // Handling commands
         switch ($tel->message) {
@@ -195,6 +222,15 @@ class TelegramController extends ApiController {
                 $tel->sendKeyboardMessage(null, $msg,
                                           TelegramController::$cancel_button);
                 break;
+        }
+    }
+
+    private function s_sms($tel, $tel_user) {
+        // Handling intermediate states
+        switch ($tel_user->state) {
+        }
+        // Handling commands
+        switch ($tel->message) {
         }
     }
 }
