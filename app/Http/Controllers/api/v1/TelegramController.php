@@ -37,12 +37,27 @@ class TelegramController extends ApiController {
     }
 
     private function getTelegramUser($tel) {
-        $tel_user = TelegramUser::firstOrCreate(['telegram_id' => $tel->chat_id]);
-        $tel_user->username = $tel->username;
+//        $tel_user             = TelegramUser::firstOrCreate(['telegram_id' => $tel->chat_id]);
+//        $tel_user->username   = $tel->username;
+//        $tel_user->first_name = $tel->first_name;
+//        $tel_user->last_name  = $tel->last_name;
+//        $tel_user->state      = TelegramController::$s_init;
+//        $tel_user->carry      = "";
+//        $tel_user->save();
+        $tel->sendMessage(null, "[DEBUG] Fetching tel_user");
+        $tel_user = TelegramUser::where("telegram_id", $tel->chat_id)->first();
+        $tel->sendMessage(null, "[DEBUG] Fetching done");
+        if (is_null($tel_user)) {
+            $tel->sendMessage(null, "[DEBUG] tel_user not found");
+            $tel_user              = new TelegramUser();
+            $tel_user->telegram_id = $tel->chat_id;
+            $tel_user->state       = TelegramController::$s_init;
+            $tel_user->carry       = "";
+        }
+        $tel_user->username   = $tel->username;
         $tel_user->first_name = $tel->first_name;
-        $tel_user->last_name = $tel->last_name;
-        $tel_user->state = TelegramController::$s_init;
-        $tel_user->carry = "";
+        $tel_user->last_name  = $tel->last_name;
+        $tel->sendMessage(null, "[DEBUG] Saving tel_user");
         $tel_user->save();
         return $tel_user;
     }
@@ -56,7 +71,7 @@ class TelegramController extends ApiController {
                 break;
             case TelegramController::$s_instaUsername:
                 $tel->sendMessage(null, "[DEBUG] In state instaUsername");
-                $carry = ["username" => $tel->message];
+                $carry           = ["username" => $tel->message];
                 $tel_user->carry = json_encode($carry);
                 $tel_user->save();
                 $tel->sendMessage(null, "[DEBUG] Carry saved");
@@ -68,11 +83,11 @@ class TelegramController extends ApiController {
                 $tel->sendMessage(null, "[DEBUG] In state instaPassword");
                 $carry = json_decode($tel_user->carry);
                 $tel->sendMessage(null, "[DEBUG] Carry decoded");
-                $instaAccount = new InstagramAccount();
+                $instaAccount                   = new InstagramAccount();
                 $instaAccount->telegram_user_id = $tel->chat_id;
-                $instaAccount->username = $carry->username;
-                $instaAccount->password = $tel->message;
-                $instaAccount->paid_until = date_default_timezone_get();
+                $instaAccount->username         = $carry->username;
+                $instaAccount->password         = $tel->message;
+                $instaAccount->paid_until       = date_default_timezone_get();
                 $instaAccount->save();
                 $tel->sendMessage(null, "[DEBUG] Insta account created");
                 $tel_user->state = TelegramController::$s_init;
@@ -88,11 +103,11 @@ class TelegramController extends ApiController {
     }
 
     private function s_idle($tel, $tel_user) {
-        $instaBtn = "افزایش فالوور اینستاگرام";
-        $smsBtn = "پنل SMS";
-        $helpBtn = "راهنما";
+        $instaBtn   = "افزایش فالوور اینستاگرام";
+        $smsBtn     = "پنل SMS";
+        $helpBtn    = "راهنما";
         $contactBtn = "ارتباط با ادمین";
-        $btns = [[$instaBtn], [$smsBtn], [$helpBtn, $contactBtn]];
+        $btns       = [[$instaBtn], [$smsBtn], [$helpBtn, $contactBtn]];
         switch ($tel->message) {
             case "/start":
                 $tel->sendKeyboardMessage(null, "به ربات تلگرام دکان خوش آمدید!", $btns);
