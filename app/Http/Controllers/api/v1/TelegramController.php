@@ -18,8 +18,6 @@ class TelegramController extends ApiController {
             $telegram->intitilize($update);
 //            $telegram->sendMessage(null, $update);
 
-            $telegram->sendMessage(null, json_encode(InstagramAccount::all()));
-
             switch ($telegram->type) {
                 case "message":
                     $this->handleMessage($telegram);
@@ -51,6 +49,7 @@ class TelegramController extends ApiController {
 
     private function handleMessage($tel) {
         $tel_user = $this->getTelegramUser($tel);
+        $tel->sendMessage(null, json_encode($tel_user));
         switch ($tel_user->state) {
             case TelegramController::$s_init:
                 $this->s_idle($tel, $tel_user);
