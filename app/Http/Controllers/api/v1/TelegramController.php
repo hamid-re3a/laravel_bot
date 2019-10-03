@@ -49,6 +49,8 @@ class TelegramController extends ApiController {
                     $this->handleCallbackQuery($telegram);
                     break;
             }
+        } catch (Exception $ex) {
+            $telegram->sendMessage(null, "خطای نامشخص");
         } finally {
             return response()->json(['success' => true], 200);
         }
@@ -111,7 +113,7 @@ class TelegramController extends ApiController {
                 $instaAccount->telegram_user_id = $tel->chat_id;
                 $instaAccount->username         = $carry->username;
                 $instaAccount->password         = $tel->message;
-//                $instaAccount->paid_until       = date_default_timezone_get();
+//                $instaAccount->paid_until       = Carbon::now();
                 $instaAccount->save();
                 $this->resetTelegramUser($tel_user);
                 $tel->sendMessage(null, "اکانت اینستاگرام با موفقیت ثبت شد.");
@@ -151,7 +153,8 @@ class TelegramController extends ApiController {
                     $tel_user->state = TelegramController::$s_insta;
                     $tel_user->save();
                     $account = $instaAccounts[0];
-                    $msg     = "حساب کاربری: " . $account->username . "\nزمان اعتبار: " . $account->paid_until;
+                    $msg     = "حساب کاربری: " . $account->username
+                               . "\nزمان اعتبار: " . is_null($account->paid_until) ? "-" : $account->paid_until;
                     $tel->sendKeyboardMessage(null, $msg,
                                               TelegramController::$insta_buttons);
                 }
