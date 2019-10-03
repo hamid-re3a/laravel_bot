@@ -272,17 +272,11 @@ class TelegramController extends ApiController {
         // Handling commands
         switch ($tel->message) {
             case TelegramController::$cmd_sms_contacts:
-                $tel->sendMessage(null, "[DEBUG] cmd_sms_contacts");
                 $contacts = SmsReceiver::where('telegram_user_id', $tel_user->telegram_id)->get();
-                $tel->sendMessage(null, json_encode($contacts));
                 $msg      = "لیست مشتریان:";
-                if (count($contacts) > 0) {
-                    $tel->sendMessage(null, "[DEBUG] has elements.");
-                    foreach ($contacts as $contact) {
+                if (count($contacts) > 0)
+                    foreach ($contacts as $contact)
                         $msg .= "\n" . $contact->name . ": " . $contact->mobile;
-                    }
-                }
-                $tel->sendMessage(null, "[DEBUG] Sending keyboard");
                 $tel->sendKeyboardMessage(null, $msg,
                                           TelegramController::$btn_sms_contacts);
                 break;
