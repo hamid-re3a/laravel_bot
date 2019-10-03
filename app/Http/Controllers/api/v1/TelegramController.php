@@ -80,11 +80,11 @@ class TelegramController extends ApiController {
                 $tel->sendMessage(null, json_encode($info));
                 break;
             case $instaBtn:
-                $insta = InstagramAccount::where(["telegram_user_id" => $tel_user->telegram_id]).first();
-                if (is_null($insta))
+                $instaAccounts = InstagramAccount::where("telegram_user_id", $tel_user->telegram_id)->get();
+                if (empty($instaAccounts))
                     $tel->sendMessage(null, "You do not have an instagram account");
                 else
-                    $tel->sendMessage(null, json_encode($insta));
+                    $tel->sendMessage(null, json_encode($instaAccounts));
                 break;
         }
     }
