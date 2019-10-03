@@ -273,10 +273,12 @@ class TelegramController extends ApiController {
         switch ($tel->message) {
             case TelegramController::$cmd_sms_contacts:
                 $contacts = SmsReceiver::where('telegram_user_id', $tel_user->telegram_id)->get();
-                $msg      = "لیست مشتریان:";
-                if (count($contacts) > 0)
+                if (count($contacts) > 0) {
+                    $msg      = "لیست مشتریان:";
                     foreach ($contacts as $contact)
                         $msg .= "\n" . $contact->name . ": " . $contact->mobile;
+                } else
+                    $msg      = "هنوز مشتری‌ای ثبت نشده است.";
                 $tel->sendKeyboardMessage(null, $msg,
                                           TelegramController::$btn_sms_contacts);
                 break;
