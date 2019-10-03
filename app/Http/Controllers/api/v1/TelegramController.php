@@ -10,8 +10,9 @@ use Carbon\Carbon;
 class TelegramController extends ApiController {
     private static $s_init = "";
     private static $s_insta = "instagram";
-    private static $s_instaUsername = "instagram_username";
-    private static $s_instaPassword = "instagram_password";
+    private static $s_insta_username = "instagram_username";
+    private static $s_insta_password = "instagram_password";
+    private static $s_insta_extend = "instagram_extend";
 
     private static $cmd_insta = "افزایش فالوور اینستاگرام";
     private static $cmd_insta_history = "تاریخچه";
@@ -99,26 +100,10 @@ class TelegramController extends ApiController {
             case TelegramController::$s_init:
                 $this->s_init($tel, $tel_user);
                 break;
-            case TelegramController::$s_instaUsername:
-                $carry           = ["username" => $tel->message];
-                $tel_user->carry = json_encode($carry);
-                $tel_user->save();
-                $tel->sendMessage(null, "لطفاً رمز عبور اینستاگرام خود را وارد نمایید:");
-                $tel_user->state = TelegramController::$s_instaPassword;
-                $tel_user->save();
-                break;
-            case TelegramController::$s_instaPassword:
-                $carry                          = json_decode($tel_user->carry);
-                $instaAccount                   = new InstagramAccount();
-                $instaAccount->telegram_user_id = $tel->chat_id;
-                $instaAccount->username         = $carry->username;
-                $instaAccount->password         = $tel->message;
-//                $instaAccount->paid_until       = Carbon::now();
-                $instaAccount->save();
-                $this->resetTelegramUser($tel_user);
-                $tel->sendMessage(null, "اکانت اینستاگرام با موفقیت ثبت شد.");
-                $tel->message = TelegramController::$cmd_insta;
-                $this->s_init($tel, $tel_user);
+            case TelegramController::$s_insta:
+            case TelegramController::$s_insta_username:
+            case TelegramController::$s_insta_password:
+                $this->s_insta($tel, $tel_user);
                 break;
         }
     }
@@ -145,19 +130,69 @@ class TelegramController extends ApiController {
             case TelegramController::$cmd_insta:
                 $instaAccounts = InstagramAccount::where("telegram_user_id", $tel_user->telegram_id)->get();
                 if (count($instaAccounts) == 0) {
-                    $tel_user->state = TelegramController::$s_instaUsername;
+                    $tel_user->state = TelegramController::$s_insta_username;
                     $tel_user->save();
                     $tel->sendKeyboardMessage(null, "لطفاً نام کاربری اینستاگرام خود را وارد نمایید:",
                                               TelegramController::$cancel_button);
                 } else {
                     $tel_user->state = TelegramController::$s_insta;
                     $tel_user->save();
-                    $account = $instaAccounts[0];
-                    $msg     = "حساب کاربری: " . $account->username
-                               . "\nزمان اعتبار: " . (is_null($account->paid_until) ? "-" : $account->paid_until);
+                    $msg = "«« __سرویس افزایش فالوور اینستاگرام__ »»" . "\nیکی از موارد زیر را انتخاب نمایید:";
+                    $msg .= " - " . TelegramController::$cmd_insta_history;
+                    $msg .= " - " . TelegramController::$cmd_insta_credit;
+                    $msg .= " - " . TelegramController::$cmd_insta_extend;
                     $tel->sendKeyboardMessage(null, $msg,
                                               TelegramController::$insta_buttons);
                 }
+                break;
+        }
+    }
+
+    private function s_insta($tel, $tel_user) {
+        // Handling intermediate states
+        switch ($tel_user->state) {
+            case TelegramController::$s_insta_username:
+                $carry           = ["username" => $tel->message];
+                $tel_user->carry = json_encode($carry);
+                $tel_user->save();
+                $tel->sendMessage(null, "لطفاً رمز عبور اینستاگرام خود را وارد نمایید:");
+                $tel_user->state = TelegramController::$s_insta_password;
+                $tel_user->save();
+                return;
+            case TelegramController::$s_insta_password:
+                $carry                          = json_decode($tel_user->carry);
+                $instaAccount                   = new InstagramAccount();
+                $instaAccount->telegram_user_id = $tel->chat_id;
+                $instaAccount->username         = $carry->username;
+                $instaAccount->password         = $tel->message;
+//                $instaAccount->paid_until       = Carbon::now();
+                $instaAccount->save();
+                $this->resetTelegramUser($tel_user);
+                $tel->sendMessage(null, "اکانت اینستاگرام با موفقیت ثبت شد.");
+                $tel->message = TelegramController::$cmd_insta;
+                $this->s_init($tel, $tel_user);
+                return;
+        }
+        // Handling commands
+        switch ($tel->message) {
+            case TelegramController::$cmd_insta_history:
+                break;
+            case TelegramController::$cmd_insta_credit:
+                $account = InstagramAccount::where("telegram_user_id", $tel_user->telegram_id)->firstOrFail();
+                $msg     = "حساب کاربری: " . $account->username
+                           . "\nزمان پایان اعتبار: " . (is_null($account->paid_until) ? "-" : $account->paid_until);
+                $tel->sendKeyboardMessage(null, $msg,
+                                          TelegramController::$insta_buttons);
+                break;
+            case TelegramController::$cmd_insta_extend:
+                $tel_user->state = TelegramController::$s_insta_extend;
+                $tel_user->save();
+                $msg = "لطفاً مبلغ " . "۴۰,۰۰۰"
+                       . " تومان جهت تمدید حساب اینستاگرام به مدت یک ماه به شماره حساب زیر واریز نمایید"
+                       . " و از صفحه پرداخت خود عکس گرفته و عکس را بفرستید."
+                       . "\nxxxx-xxxx-xxxx-xxxx";
+                $tel->sendKeyboardMessage(null, $msg,
+                                          TelegramController::$cancel_button);
                 break;
         }
     }
