@@ -7,14 +7,11 @@ use App\InstagramAccount;
 use App\TelegramUser;
 
 class TelegramController extends ApiController {
-    private static $states;
+    private static $s_init = "";
+    private static $s_instaUsername = "instagram_username";
+    private static $s_instaPassword = "instagram_password";
 
     public function dokan() {
-        TelegramController::$states = [
-            "init" => "",
-            "instaUsername" => "instagram_username",
-            "instaPassword" => "instagram_password",
-        ];
         try {
             $update   = @file_get_contents("php://input");
             $telegram = new TelegramSdk(env('TELEGRAM_DOKAN_API_KEY'));
@@ -46,7 +43,7 @@ class TelegramController extends ApiController {
         $tel_user->username = $tel->username;
         $tel_user->first_name = $tel->first_name;
         $tel_user->last_name = $tel->last_name;
-        $tel_user->state = TelegramController::$states->init;
+        $tel_user->state = TelegramController::$s_init;
         $tel_user->carry = "";
         $tel_user->save();
         return $tel_user;
@@ -55,20 +52,20 @@ class TelegramController extends ApiController {
     private function handleMessage($tel) {
         $tel_user = $this->getTelegramUser($tel);
         switch ($tel_user->state) {
-            case TelegramController::$states->init:
+            case TelegramController::$s_init:
                 $this->s_idle($tel, $tel_user);
                 break;
-            case TelegramController::$states->instaUsername:
+            case TelegramController::$s_instaUsername:
                 $tel->sendMessage(null, "[DEBUG] In state instaUsername");
                 $carry = ["username" => $tel->message];
                 $tel_user->carry = json_encode($carry);
                 $tel_user->save();
                 $tel->sendMessage(null, "[DEBUG] Carry saved");
                 $tel->sendMessage(null, "لطفاً رمز عبور اینستاگرام خود را وارد نمایید:");
-                $tel_user->state = TelegramController::$states->instaPassword;
+                $tel_user->state = TelegramController::$s_instaPassword;
                 $tel_user->save();
                 break;
-            case TelegramController::$states->instaPassword:
+            case TelegramController::$s_instaPassword:
                 $tel->sendMessage(null, "[DEBUG] In state instaPassword");
                 $carry = json_decode($tel_user->carry);
                 $tel->sendMessage(null, "[DEBUG] Carry decoded");
@@ -79,7 +76,7 @@ class TelegramController extends ApiController {
                 $instaAccount->paid_until = date_default_timezone_get();
                 $instaAccount->save();
                 $tel->sendMessage(null, "[DEBUG] Insta account created");
-                $tel_user->state = TelegramController::$states->init;
+                $tel_user->state = TelegramController::$s_init;
                 $tel_user->save();
                 $tel->message = "افزایش فالوور اینستاگرام";
                 $this->s_idle($tel, $tel_user);
@@ -115,7 +112,7 @@ class TelegramController extends ApiController {
                 $instaAccounts = InstagramAccount::where("telegram_user_id", $tel_user->telegram_id)->get();
                 $tel->sendMessage(null, json_encode($instaAccounts));
                 if (count($instaAccounts) == 0) {
-                    $tel_user->state = TelegramController::$states->instaUsername;
+                    $tel_user->state = TelegramController::$s_instaUsername;
                     $tel_user->save();
                     $tel->sendMessage(null, "لطفاً نام کاربری اینستاگرام خود را وارد نمایید:");
                 } else
