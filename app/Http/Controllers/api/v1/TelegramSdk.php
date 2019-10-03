@@ -301,7 +301,8 @@ class TelegramSdk
             $chatId = $this->chat_id;
         }
 
-        $url = $this->telegram_url . "sendMessage?chat_id=" . urlencode($chatId) . "&text=" . urlencode($message);
+        $url = $this->telegram_url . "sendMessage?chat_id=" . urlencode($chatId)
+               . "&text=" . urlencode($message) . "&parse_mode=Markdown";
 
         @file_get_contents($url);
     }

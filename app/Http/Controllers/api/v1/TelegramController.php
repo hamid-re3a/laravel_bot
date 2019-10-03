@@ -138,9 +138,9 @@ class TelegramController extends ApiController {
                     $tel_user->state = TelegramController::$s_insta;
                     $tel_user->save();
                     $msg = "«« __سرویس افزایش فالوور اینستاگرام__ »»" . "\nیکی از موارد زیر را انتخاب نمایید:";
-                    $msg .= " - " . TelegramController::$cmd_insta_history;
-                    $msg .= " - " . TelegramController::$cmd_insta_credit;
-                    $msg .= " - " . TelegramController::$cmd_insta_extend;
+                    $msg .= "\n - " . TelegramController::$cmd_insta_history;
+                    $msg .= "\n - " . TelegramController::$cmd_insta_credit;
+                    $msg .= "\n - " . TelegramController::$cmd_insta_extend;
                     $tel->sendKeyboardMessage(null, $msg,
                                               TelegramController::$insta_buttons);
                 }
