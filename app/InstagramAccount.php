@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class InstagramAccount extends Model {
     protected $table = 'instagram_accounts';
     protected $fillable = [
-        'user_id', 'username', 'cookie', 'paid_until'
+        'telegram_user_id', 'username', 'password', 'cookie', 'paid_until'
     ];
     protected $hidden = [
         'password'

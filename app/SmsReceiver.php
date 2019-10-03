@@ -7,6 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 class SmsReceiver extends Model {
     protected $table = 'sms_receivers';
     protected $fillable = [
-        'user_id', 'mobile', 'name'
+        'telegram_user_id', 'mobile', 'name'
     ];
 }
