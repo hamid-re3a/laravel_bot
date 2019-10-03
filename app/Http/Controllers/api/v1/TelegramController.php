@@ -82,7 +82,7 @@ class TelegramController extends ApiController {
             case $instaBtn:
                 $instaAccounts = InstagramAccount::where("telegram_user_id", $tel_user->telegram_id)->get();
                 $tel->sendMessage(null, json_encode($instaAccounts));
-                if (empty($instaAccounts))
+                if (count($instaAccounts) == 0)
                     $tel->sendMessage(null, "You do not have an instagram account");
                 else
                     $tel->sendMessage(null, "You have an instagram account");
