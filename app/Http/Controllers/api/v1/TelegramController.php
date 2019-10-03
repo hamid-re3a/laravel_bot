@@ -38,6 +38,7 @@ class TelegramController extends ApiController {
         try {
             $tel_user = TelegramUser::query()->when('telegram_id', $tel->chat_id)->firstOrFail();
         } catch (Exception $e) {
+            $tel->sendMessage(null, "[DEBUG] TelegramUser fetch failed");
             $tel_user->telegram_id = $tel->chat_id;
             $tel_user->username    = $tel->username;
             $tel_user->first_name  = $tel->first_name;
@@ -45,12 +46,15 @@ class TelegramController extends ApiController {
             $tel_user->state       = TelegramController::$idleState;
             $tel_user->carry       = "";
             $tel_user->save();
+            $tel->sendMessage(null, "[DEBUG] TelegramUser saved");
         }
         return $tel_user;
     }
 
     private function handleMessage($tel) {
+        $tel->sendMessage(null, "[DEBUG] handleMessage invoked");
         $tel_user = $this->getTelegramUser($tel);
+        $tel->sendMessage(null, "[DEBUG] TelegramUser fetched");
         switch ($tel_user->state) {
             case TelegramController::$idleState:
                 $this->s_idle($tel);
@@ -63,6 +67,7 @@ class TelegramController extends ApiController {
     }
 
     private function s_idle($tel) {
+        $tel->sendMessage(null, "[DEBUG] In idle state");
         switch ($tel->message) {
             case "/start":
                 $tel->sendKeyboardMessage(null, "به ربات تلگرام دکان خوش آمدید!",
