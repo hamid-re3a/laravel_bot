@@ -45,6 +45,8 @@ return array(
     'CreateMoneyTransactionsTable' => $baseDir . '/database/migrations/2019_09_30_163710_create_money_transactions_table.php',
     'CreateSmsOrdersTable' => $baseDir . '/database/migrations/2019_09_30_163931_create_sms_orders_table.php',
     'CreateSmsReceiversTable' => $baseDir . '/database/migrations/2019_09_30_165059_create_sms_receivers_table.php',
+    'CreateTelegramBotStatesTable' => $baseDir . '/database/migrations/2019_10_03_060414_create_telegram_bot_states_table.php',
+    'CreateTelegramUsersTable' => $baseDir . '/database/migrations/2019_10_03_061959_create_telegram_users_table.php',
     'CreateUsersTable' => $baseDir . '/database/migrations/2014_10_12_000000_create_users_table.php',
     'Cron\\AbstractField' => $vendorDir . '/mtdowling/cron-expression/src/Cron/AbstractField.php',
     'Cron\\CronExpression' => $vendorDir . '/mtdowling/cron-expression/src/Cron/CronExpression.php',

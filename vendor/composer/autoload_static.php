@@ -430,6 +430,8 @@ class ComposerStaticInit9774d50092b9e37eb55f6e53c3031b52
         'CreateMoneyTransactionsTable' => __DIR__ . '/../..' . '/database/migrations/2019_09_30_163710_create_money_transactions_table.php',
         'CreateSmsOrdersTable' => __DIR__ . '/../..' . '/database/migrations/2019_09_30_163931_create_sms_orders_table.php',
         'CreateSmsReceiversTable' => __DIR__ . '/../..' . '/database/migrations/2019_09_30_165059_create_sms_receivers_table.php',
+        'CreateTelegramBotStatesTable' => __DIR__ . '/../..' . '/database/migrations/2019_10_03_060414_create_telegram_bot_states_table.php',
+        'CreateTelegramUsersTable' => __DIR__ . '/../..' . '/database/migrations/2019_10_03_061959_create_telegram_users_table.php',
         'CreateUsersTable' => __DIR__ . '/../..' . '/database/migrations/2014_10_12_000000_create_users_table.php',
         'Cron\\AbstractField' => __DIR__ . '/..' . '/mtdowling/cron-expression/src/Cron/AbstractField.php',
         'Cron\\CronExpression' => __DIR__ . '/..' . '/mtdowling/cron-expression/src/Cron/CronExpression.php',
