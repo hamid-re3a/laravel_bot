@@ -142,7 +142,7 @@ class TelegramController extends ApiController {
                                               TelegramController::$cancel_button);
                 } else {
                     $account = $instaAccounts[0];
-                    $msg     = "حساب کاربری: " . $account->username . "\nزمان اعتبار" . $account->paid_until;
+                    $msg     = "حساب کاربری: " . $account->username . "\nزمان اعتبار: " . $account->paid_until;
                     $tel->sendKeyboardMessage(null, $msg,
                                               TelegramController::$insta_buttons);
                 }
