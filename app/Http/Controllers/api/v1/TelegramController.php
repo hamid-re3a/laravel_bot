@@ -70,7 +70,7 @@ class TelegramController extends ApiController {
         $tel_user = $this->getTelegramUser($tel);
         if ($tel->message == TelegramController::$cmd_cancel) {
             $this->resetTelegramUser($tel_user);
-            $tel->sendMessage(null, "[DEBUG] Reset done");
+            $tel->sendKeyboardMessage(null, "فرآیند لغو شد.", TelegramController::$cmd_buttons);
             return;
         }
         switch ($tel_user->state) {
