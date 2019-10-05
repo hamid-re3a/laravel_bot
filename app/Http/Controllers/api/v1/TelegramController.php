@@ -110,7 +110,7 @@ class TelegramController extends ApiController {
             case TelegramController::$cmd_cancel:
                 $this->resetTelegramUser($tel_user);
                 $btn = $tel_user->state == TelegramController::$state_sms_contacts
-                ? TelegramController::$btn_sms : TelegramController::$btn_init;
+                    ? TelegramController::$btn_sms : TelegramController::$btn_init;
                 $tel->sendKeyboardMessage(null, "فرآیند لغو شد.", $btn);
                 return;
             case "/debug":
