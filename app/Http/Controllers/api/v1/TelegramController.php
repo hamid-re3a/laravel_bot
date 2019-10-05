@@ -15,6 +15,7 @@ class TelegramController extends ApiController {
     private static $state_insta_password          = "instagram_password";
     private static $state_insta_extend            = "instagram_extend";
     private static $state_sms                     = "sms";
+    private static $state_sms_contacts            = "sms_contacts";
     private static $state_sms_contacts_new_name   = "sms_contacts_new_name";
     private static $state_sms_contacts_new_mobile = "sms_contacts_new_mobile";
     private static $state_sms_contacts_remove     = "sms_contacts_remove";
@@ -108,7 +109,9 @@ class TelegramController extends ApiController {
         switch ($tel->message) {
             case TelegramController::$cmd_cancel:
                 $this->resetTelegramUser($tel_user);
-                $tel->sendKeyboardMessage(null, "فرآیند لغو شد.", TelegramController::$btn_init);
+                $btn = $tel_user->state == TelegramController::$state_sms_contacts
+                ? TelegramController::$btn_sms : TelegramController::$btn_init;
+                $tel->sendKeyboardMessage(null, "فرآیند لغو شد.", $btn);
                 return;
             case "/debug":
                 $tel->sendMessage(null, Carbon::now());
@@ -126,6 +129,7 @@ class TelegramController extends ApiController {
                 $this->state_insta($tel, $tel_user);
                 break;
             case TelegramController::$state_sms:
+            case TelegramController::$state_sms_contacts:
             case TelegramController::$state_sms_contacts_new_name:
             case TelegramController::$state_sms_contacts_new_mobile:
             case TelegramController::$state_sms_contacts_remove:
@@ -193,6 +197,8 @@ class TelegramController extends ApiController {
                        . "\n" . "@Hamidre3a";
                 $tel->sendMessage(null, $msg);
                 break;
+            default:
+                $tel->sendKeyboardMessage(null, "پیام قابل فهم نیست.", TelegramController::$btn_init);
         }
     }
 
@@ -246,6 +252,8 @@ class TelegramController extends ApiController {
                 $tel->sendKeyboardMessage(null, $msg,
                                           TelegramController::$btn_cancel);
                 break;
+            default:
+                $tel->sendKeyboardMessage(null, "پیام قابل فهم نیست.", TelegramController::$btn_insta);
         }
     }
 
@@ -300,6 +308,8 @@ class TelegramController extends ApiController {
                     $msg = "هنوز مشتری‌ای ثبت نشده است.";
                 $tel->sendKeyboardMessage(null, $msg,
                                           TelegramController::$btn_sms_contacts);
+                $tel_user->state = TelegramController::$state_sms_contacts;
+                $tel_user->save();
                 break;
             case TelegramController::$cmd_sms_sendToClients:
                 $tel->sendMessage(null, "هنوز پیاده‌سازی نشده است.");
@@ -319,6 +329,8 @@ class TelegramController extends ApiController {
                 $tel->sendKeyboardMessage(null, "لطفاً شماره همراه مشتری را وارد نمایید:",
                                           TelegramController::$btn_cancel);
                 break;
+            default:
+                $tel->sendKeyboardMessage(null, "پیام قابل فهم نیست.", TelegramController::$btn_sms);
         }
     }
 }
