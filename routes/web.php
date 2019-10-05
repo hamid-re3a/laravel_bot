@@ -15,8 +15,11 @@ Route::get('/', function () {
     return "dokan";
 });
 
-
 Route::group(['prefix' => 'bot/v1', 'namespace' => 'api\v1'], function () {
     Route::post('dokan', 'TelegramController@dokan');
     Route::get('info', 'TelegramController@info');
+});
+
+Route::group(['prefix' => 'instagram/v1', 'namespace' => 'api\v1'], function () {
+    Route::resource('logs', 'InstagramLogsController');
 });
