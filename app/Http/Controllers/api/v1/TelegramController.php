@@ -371,6 +371,7 @@ class TelegramController extends ApiController {
                     else {
                         $tel->sendMessage(null, "[DEBUG] photo received.");
                         $tel->savePhoto($pic, "/dokan_bot_pics", $tel->chat_id . "-" . $pic);
+                        $tel->sendMessage(null, "[DEBUG] photo saved.");
                         $account = InstagramAccount::where("telegram_user_id", $tel_user->telegram_id)->firstOrFail();
                         $trans = new InstagramTransaction();
                         $trans->telegram_user_id = $tel->chat_id;
