@@ -367,7 +367,7 @@ class TelegramController extends ApiController {
                     $pic = $tel->photo;
                     if (is_null($pic))
                         $tel->sendKeyboardMessage(null, "لطفاً تصویر بفرستید.",
-                                                  TelegramController::$btn_insta);
+                                                  TelegramController::$btn_cancel);
                     else {
                         $tel->sendMessage(null, "[DEBUG] photo received.");
                         $tel->savePhoto($pic, "/dokan_bot_pics", $tel->chat_id . "-" . $pic);
