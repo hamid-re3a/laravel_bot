@@ -127,17 +127,17 @@ class TelegramController extends ApiController {
         $tel_user = $this->getTelegramUser($tel);
         // Stateless commands
         switch ($tel->message) {
-            case TelegramController::$cmd_cancel:
-                $btn = $tel_user->state == TelegramController::$state_sms_contacts
-                    ? TelegramController::$btn_sms : TelegramController::$btn_init;
-                if ($tel_user->state != TelegramController::$state_sms_contacts)
-                    $this->resetTelegramUser($tel_user);
-                else {
-                    $tel_user->state = TelegramController::$state_sms;
-                    $tel_user->save();
-                }
-                $tel->sendKeyboardMessage(null, "فرآیند لغو شد.", $btn);
-                return;
+//            case TelegramController::$cmd_cancel:
+//                $btn = $tel_user->state == TelegramController::$state_sms_contacts
+//                    ? TelegramController::$btn_sms : TelegramController::$btn_init;
+//                if ($tel_user->state != TelegramController::$state_sms_contacts)
+//                    $this->resetTelegramUser($tel_user);
+//                else {
+//                    $tel_user->state = TelegramController::$state_sms;
+//                    $tel_user->save();
+//                }
+//                $tel->sendKeyboardMessage(null, "فرآیند لغو شد.", $btn);
+//                return;
             case "/debug":
                 $tel->sendMessage(null, Carbon::now());
                 return;
@@ -237,25 +237,35 @@ class TelegramController extends ApiController {
         // Handling intermediate states
         switch ($tel_user->state) {
             case TelegramController::$state_insta_username:
-                $carry = ["username" => $tel->message];
-                $tel_user->carry = json_encode($carry);
-                $tel_user->save();
-                $tel->sendMessage(null, "لطفاً رمز عبور اینستاگرام خود را وارد نمایید:");
-                $tel_user->state = TelegramController::$state_insta_password;
-                $tel_user->save();
+                if ($tel->message == TelegramController::$cmd_cancel) {
+                    $this->resetTelegramUser($tel_user);
+                    $tel->sendKeyboardMessage(null, "فرآیند لغو شد.", TelegramController::$btn_init);
+                } else {
+                    $carry = ["username" => $tel->message];
+                    $tel_user->carry = json_encode($carry);
+                    $tel_user->save();
+                    $tel->sendMessage(null, "لطفاً رمز عبور اینستاگرام خود را وارد نمایید:");
+                    $tel_user->state = TelegramController::$state_insta_password;
+                    $tel_user->save();
+                }
                 return;
             case TelegramController::$state_insta_password:
-                $carry = json_decode($tel_user->carry);
-                $instaAccount = new InstagramAccount();
-                $instaAccount->telegram_user_id = $tel->chat_id;
-                $instaAccount->username = $carry->username;
-                $instaAccount->password = $tel->message;
+                if ($tel->message == TelegramController::$cmd_cancel) {
+                    $this->resetTelegramUser($tel_user);
+                    $tel->sendKeyboardMessage(null, "فرآیند لغو شد.", TelegramController::$btn_init);
+                } else {
+                    $carry = json_decode($tel_user->carry);
+                    $instaAccount = new InstagramAccount();
+                    $instaAccount->telegram_user_id = $tel->chat_id;
+                    $instaAccount->username = $carry->username;
+                    $instaAccount->password = $tel->message;
 //                $instaAccount->paid_until       = Carbon::now();
-                $instaAccount->save();
-                $this->resetTelegramUser($tel_user);
-                $tel->sendMessage(null, "اکانت اینستاگرام با موفقیت ثبت شد.");
-                $tel->message = TelegramController::$cmd_insta;
-                $this->state_init($tel, $tel_user);
+                    $instaAccount->save();
+                    $this->resetTelegramUser($tel_user);
+                    $tel->sendMessage(null, "اکانت اینستاگرام با موفقیت ثبت شد.");
+                    $tel->message = TelegramController::$cmd_insta;
+                    $this->state_init($tel, $tel_user);
+                }
                 return;
             case TelegramController::$state_insta_update:
                 switch ($tel->message) {
@@ -390,6 +400,10 @@ class TelegramController extends ApiController {
                        . "\nxxxx-xxxx-xxxx-xxxx";
                 $tel->sendKeyboardMessage(null, $msg,
                                           TelegramController::$btn_cancel);
+                break;
+            case TelegramController::$cmd_cancel:
+                $this->resetTelegramUser($tel_user);
+                $tel->sendKeyboardMessage(null, "فرآیند لغو شد.", TelegramController::$btn_init);
                 break;
             default:
                 $tel->sendKeyboardMessage(null, "پیام قابل فهم نیست.", TelegramController::$btn_insta);
