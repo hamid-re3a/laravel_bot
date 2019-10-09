@@ -13,6 +13,11 @@ class TelegramController extends ApiController {
     private static $state_insta                   = "instagram";
     private static $state_insta_username          = "instagram_username";
     private static $state_insta_password          = "instagram_password";
+    private static $state_insta_update            = "instagram_update";
+    private static $state_insta_update_username   = "instagram_update_username";
+    private static $state_insta_update_password   = "instagram_update_password";
+    private static $state_insta_update_comment    = "instagram_update_comment";
+    private static $state_insta_update_follow     = "instagram_update_follow";
     private static $state_insta_extend            = "instagram_extend";
     private static $state_sms                     = "sms";
     private static $state_sms_contacts            = "sms_contacts";
@@ -20,45 +25,60 @@ class TelegramController extends ApiController {
     private static $state_sms_contacts_new_mobile = "sms_contacts_new_mobile";
     private static $state_sms_contacts_remove     = "sms_contacts_remove";
 
-    private static $cmd_insta               = "سرویس افزایش فالوور اینستاگرام";
-    private static $cmd_insta_history       = "تاریخچه";
-    private static $cmd_insta_credit        = "اعتبار باقیمانده";
-    private static $cmd_insta_extend        = "افزایش اعتبار";
-    private static $cmd_sms                 = "سرویس ارسال SMS";
-    private static $cmd_sms_contacts        = "لیست مشتریان";
-    private static $cmd_sms_sendToClients   = "ارسال گروهی برای مشتریان";
-    private static $cmd_sms_sendToNear      = "ارسال گروهی برای منطقه";
-    private static $cmd_sms_contacts_new    = "افزودن مشتری";
-    private static $cmd_sms_contacts_remove = "حذف مشتری";
-    private static $cmd_help                = "راهنما";
-    private static $cmd_contact             = "ارتباط با ادمین";
-    private static $cmd_cancel              = "انصراف";
+    private static $cmd_insta                 = "سرویس افزایش فالوور اینستاگرام";
+    private static $cmd_insta_detail          = "جزئیات";
+    private static $cmd_insta_update          = "اصلاح مشخصات";
+    private static $cmd_insta_extend          = "افزایش اعتبار";
+    private static $cmd_insta_update_username = "نام کاربری";
+    private static $cmd_insta_update_password = "رمز عبور";
+    private static $cmd_insta_update_comment  = "امکان کامنت‌گذاری";
+    private static $cmd_insta_update_follow   = "امکان فالو کردن";
+    private static $cmd_sms                   = "سرویس ارسال SMS";
+    private static $cmd_sms_contacts          = "لیست مشتریان";
+    private static $cmd_sms_sendToClients     = "ارسال گروهی برای مشتریان";
+    private static $cmd_sms_sendToNear        = "ارسال گروهی برای منطقه";
+    private static $cmd_sms_contacts_new      = "افزودن مشتری";
+    private static $cmd_sms_contacts_remove   = "حذف مشتری";
+    private static $cmd_help                  = "راهنما";
+    private static $cmd_contact               = "ارتباط با ادمین";
+    private static $cmd_cancel                = "انصراف";
+    private static $cmd_active                = "فعال";
+    private static $cmd_deactive              = "غیرفعال";
 
     private static $btn_init         = [];
     private static $btn_cancel       = [];
+    private static $btn_active       = [];
     private static $btn_insta        = [];
+    private static $btn_insta_update = [];
     private static $btn_sms          = [];
     private static $btn_sms_contacts = [];
 
     public function dokan() {
         try {
-            TelegramController::$btn_init         = [[TelegramController::$cmd_insta],
-                                                     [TelegramController::$cmd_sms],
-                                                     [TelegramController::$cmd_help, TelegramController::$cmd_contact]];
-            TelegramController::$btn_cancel       = [[TelegramController::$cmd_cancel]];
-            TelegramController::$btn_insta        = [[TelegramController::$cmd_insta_history,
-                                                      TelegramController::$cmd_insta_credit],
-                                                     [TelegramController::$cmd_insta_extend,
-                                                      TelegramController::$cmd_cancel]];
-            TelegramController::$btn_sms          = [[TelegramController::$cmd_sms_contacts,
-                                                      TelegramController::$cmd_sms_sendToClients],
-                                                     [TelegramController::$cmd_sms_sendToNear,
-                                                      TelegramController::$cmd_cancel]];
+            TelegramController::$btn_init = [[TelegramController::$cmd_insta],
+                                             [TelegramController::$cmd_help, TelegramController::$cmd_contact]];
+            TelegramController::$btn_cancel = [[TelegramController::$cmd_cancel]];
+            TelegramController::$btn_active = [[TelegramController::$cmd_active,
+                                                TelegramController::$cmd_deactive],
+                                               [TelegramController::$cmd_cancel]];
+            TelegramController::$btn_insta = [[TelegramController::$cmd_insta_detail,
+                                               TelegramController::$cmd_insta_update],
+                                              [TelegramController::$cmd_insta_extend,
+                                               TelegramController::$cmd_cancel]];
+            TelegramController::$btn_insta_update = [[TelegramController::$cmd_insta_update_username,
+                                                      TelegramController::$cmd_insta_update_password],
+                                                     [TelegramController::$cmd_insta_update_comment,
+                                                      TelegramController::$cmd_insta_update_follow],
+                                                     [TelegramController::$cmd_cancel]];
+            TelegramController::$btn_sms = [[TelegramController::$cmd_sms_contacts,
+                                             TelegramController::$cmd_sms_sendToClients],
+                                            [TelegramController::$cmd_sms_sendToNear,
+                                             TelegramController::$cmd_cancel]];
             TelegramController::$btn_sms_contacts = [[TelegramController::$cmd_sms_contacts_new,
                                                       TelegramController::$cmd_sms_contacts_remove],
                                                      [TelegramController::$cmd_cancel]];
 
-            $update   = @file_get_contents("php://input");
+            $update = @file_get_contents("php://input");
             $telegram = new TelegramSdk(env('TELEGRAM_DOKAN_API_KEY'));
             $telegram->intitilize($update);
 
@@ -85,14 +105,14 @@ class TelegramController extends ApiController {
     private function getTelegramUser($tel) {
         $tel_user = TelegramUser::where("telegram_id", $tel->chat_id)->first();
         if (is_null($tel_user)) {
-            $tel_user              = new TelegramUser();
+            $tel_user = new TelegramUser();
             $tel_user->telegram_id = $tel->chat_id;
-            $tel_user->state       = TelegramController::$state_init;
-            $tel_user->carry       = "";
+            $tel_user->state = TelegramController::$state_init;
+            $tel_user->carry = "";
         }
-        $tel_user->username   = $tel->username;
+        $tel_user->username = $tel->username;
         $tel_user->first_name = $tel->first_name;
-        $tel_user->last_name  = $tel->last_name;
+        $tel_user->last_name = $tel->last_name;
         $tel_user->save();
         return $tel_user;
     }
@@ -130,6 +150,11 @@ class TelegramController extends ApiController {
             case TelegramController::$state_insta:
             case TelegramController::$state_insta_username:
             case TelegramController::$state_insta_password:
+            case TelegramController::$state_insta_update:
+            case TelegramController::$state_insta_update_username:
+            case TelegramController::$state_insta_update_password:
+            case TelegramController::$state_insta_update_comment:
+            case TelegramController::$state_insta_update_follow:
             case TelegramController::$state_insta_extend:
                 $this->state_insta($tel, $tel_user);
                 break;
@@ -172,9 +197,10 @@ class TelegramController extends ApiController {
                 } else {
                     $tel_user->state = TelegramController::$state_insta;
                     $tel_user->save();
-                    $msg = "«« سرویس افزایش فالوور اینستاگرام »»" . "\nیکی از موارد زیر را انتخاب نمایید:";
-                    $msg .= "\n • " . TelegramController::$cmd_insta_history;
-                    $msg .= "\n • " . TelegramController::$cmd_insta_credit;
+                    $msg = "«« سرویس افزایش فالوور اینستاگرام »»";
+                    $msg .= "\nیکی از موارد زیر را انتخاب نمایید:";
+                    $msg .= "\n • " . TelegramController::$cmd_insta_detail;
+                    $msg .= "\n • " . TelegramController::$cmd_insta_update;
                     $msg .= "\n • " . TelegramController::$cmd_insta_extend;
                     $msg .= "\n.";
                     $tel->sendKeyboardMessage(null, $msg,
@@ -211,7 +237,7 @@ class TelegramController extends ApiController {
         // Handling intermediate states
         switch ($tel_user->state) {
             case TelegramController::$state_insta_username:
-                $carry           = ["username" => $tel->message];
+                $carry = ["username" => $tel->message];
                 $tel_user->carry = json_encode($carry);
                 $tel_user->save();
                 $tel->sendMessage(null, "لطفاً رمز عبور اینستاگرام خود را وارد نمایید:");
@@ -219,11 +245,11 @@ class TelegramController extends ApiController {
                 $tel_user->save();
                 return;
             case TelegramController::$state_insta_password:
-                $carry                          = json_decode($tel_user->carry);
-                $instaAccount                   = new InstagramAccount();
+                $carry = json_decode($tel_user->carry);
+                $instaAccount = new InstagramAccount();
                 $instaAccount->telegram_user_id = $tel->chat_id;
-                $instaAccount->username         = $carry->username;
-                $instaAccount->password         = $tel->message;
+                $instaAccount->username = $carry->username;
+                $instaAccount->password = $tel->message;
 //                $instaAccount->paid_until       = Carbon::now();
                 $instaAccount->save();
                 $this->resetTelegramUser($tel_user);
@@ -231,21 +257,121 @@ class TelegramController extends ApiController {
                 $tel->message = TelegramController::$cmd_insta;
                 $this->state_init($tel, $tel_user);
                 return;
+            case TelegramController::$state_insta_update:
+                switch ($tel->message) {
+                    case TelegramController::$cmd_insta_update_username:
+                        $tel_user->state = TelegramController::$state_insta_update_username;
+                        $tel_user->save();
+                        $tel->sendKeyboardMessage(null, "نام کاربری اینستاگرام را وارد نمایید:",
+                                                  TelegramController::$btn_cancel);
+                        return;
+                    case TelegramController::$cmd_insta_update_password:
+                        $tel_user->state = TelegramController::$state_insta_update_password;
+                        $tel->sendKeyboardMessage(null, "رمز عبور اینستاگرام را وارد نمایید:",
+                                                  TelegramController::$btn_cancel);
+                        $tel_user->save();
+                        return;
+                    case TelegramController::$cmd_insta_update_comment:
+                        $tel_user->state = TelegramController::$state_insta_update_comment;
+                        $tel_user->save();
+                        $tel->sendKeyboardMessage(null, "امکان کامنت‌گذاری را تعیین نمایید:",
+                                                  TelegramController::$btn_active);
+                        return;
+                    case TelegramController::$cmd_insta_update_follow:
+                        $tel_user->state = TelegramController::$state_insta_update_follow;
+                        $tel_user->save();
+                        $tel->sendKeyboardMessage(null, "امکان فالو کردن را تعیین نمایید:",
+                                                  TelegramController::$btn_active);
+                        return;
+                    default:
+                        $tel->sendKeyboardMessage(null, "پیام قابل فهم نیست.", TelegramController::$btn_insta_update);
+                }
+                return;
+            case TelegramController::$state_insta_update_username:
+                if ($tel->message == TelegramController::$cmd_cancel) {
+                    $tel->message = TelegramController::$cmd_insta_update;
+                    break;
+                } else {
+                    $account = InstagramAccount::where("telegram_user_id", $tel_user->telegram_id)->firstOrFail();
+                    $account->username = $tel->message;
+                    $account->save();
+                    $tel->sendMessage(null, "اکانت اینستاگرام با موفقیت اصلاح شد.");
+                    $tel->message = TelegramController::$cmd_insta_update;
+                    break;
+                }
+            case TelegramController::$state_insta_update_password:
+                if ($tel->message == TelegramController::$cmd_cancel) {
+                    $tel->message = TelegramController::$cmd_insta_update;
+                    break;
+                } else {
+                    $account = InstagramAccount::where("telegram_user_id", $tel_user->telegram_id)->firstOrFail();
+                    $account->password = $tel->message;
+                    $account->save();
+                    $tel->sendMessage(null, "اکانت اینستاگرام با موفقیت اصلاح شد.");
+                    $tel->message = TelegramController::$cmd_insta_update;
+                    break;
+                }
+            case TelegramController::$state_insta_update_comment:
+                if ($tel->message == TelegramController::$cmd_active ||
+                    $tel->message == TelegramController::$cmd_deactive) {
+                    $account = InstagramAccount::where("telegram_user_id", $tel_user->telegram_id)->firstOrFail();
+                    $account->comment = $tel->message == TelegramController::$cmd_active;
+                    $account->save();
+                    $tel->sendMessage(null, "اکانت اینستاگرام با موفقیت اصلاح شد.");
+                    $tel->message = TelegramController::$cmd_insta_update;
+                    break;
+                } else if ($tel->message == TelegramController::$cmd_cancel) {
+                    $tel->message = TelegramController::$cmd_insta_update;
+                    break;
+                } else {
+                    $tel->sendKeyboardMessage(null, "پیام قابل فهم نیست.",
+                                              TelegramController::$state_insta_update_comment);
+                    return;
+                }
+            case TelegramController::$state_insta_update_follow:
+                if ($tel->message == TelegramController::$cmd_active ||
+                    $tel->message == TelegramController::$cmd_deactive) {
+                    $account = InstagramAccount::where("telegram_user_id", $tel_user->telegram_id)->firstOrFail();
+                    $account->follow = $tel->message == TelegramController::$cmd_active;
+                    $account->save();
+                    $tel->sendMessage(null, "اکانت اینستاگرام با موفقیت اصلاح شد.");
+                    $tel->message = TelegramController::$cmd_insta_update;
+                    break;
+                } else if ($tel->message == TelegramController::$cmd_cancel) {
+                    $tel->message = TelegramController::$cmd_insta_update;
+                    break;
+                } else {
+                    $tel->sendKeyboardMessage(null, "پیام قابل فهم نیست.",
+                                              TelegramController::$state_insta_update_follow);
+                    return;
+                }
             case TelegramController::$state_insta_extend:
                 $tel->sendMessage(null, "هنوز پیاده‌سازی نشده است.");
                 return;
         }
         // Handling commands
         switch ($tel->message) {
-            case TelegramController::$cmd_insta_history:
-                $tel->sendMessage(null, "هنوز پیاده‌سازی نشده است.");
-                break;
-            case TelegramController::$cmd_insta_credit:
+            case TelegramController::$cmd_insta_detail:
                 $account = InstagramAccount::where("telegram_user_id", $tel_user->telegram_id)->firstOrFail();
-                $msg     = "حساب کاربری: " . $account->username
-                           . "\nزمان پایان اعتبار: " . (is_null($account->paid_until) ? "-" : $account->paid_until);
+                $msg = "نام کاربری: " . $account->username;
+                $msg .= "\nزمان پایان اعتبار: " . (is_null($account->paid_until) ? "غیرفعال" : $account->paid_until);
+                $msg .= "\nامکان کامنت‌گذاری: " . $account->comment ? "فعال" : "غیرفعال";
+                $msg .= "\nامکان فالو کردن: " . $account->follow ? "فعال" : "غیرفعال";
+                $msg .= "\nصحت نام کاربری و رمز عبور: " . $account->is_credentials_valid ? "صحیح" : "ناصحیح (یا هنوز بررسی نشده)";
+                $msg .= "\nقعال بودن اعتبارسنجی دو مرحله‌ای: " . $account->is_two_step_verification_valid ? "غیرفعال" : "فعال (یا هنوز بررسی نشده)";
                 $tel->sendKeyboardMessage(null, $msg,
                                           TelegramController::$btn_insta);
+                break;
+            case TelegramController::$cmd_insta_update:
+                $tel_user->state = TelegramController::$state_insta_update;
+                $tel_user->save();
+                $msg = "یکی از موارد زیر را برای اصلاح انتخاب کنید:";
+                $msg .= "\n • " . TelegramController::$cmd_insta_update_username;
+                $msg .= "\n • " . TelegramController::$cmd_insta_update_password;
+                $msg .= "\n • " . TelegramController::$cmd_insta_update_comment;
+                $msg .= "\n • " . TelegramController::$cmd_insta_update_follow;
+                $tel->sendKeyboardMessage(null, $msg,
+                                          TelegramController::$btn_insta_update);
                 break;
             case TelegramController::$cmd_insta_extend:
                 $tel_user->state = TelegramController::$state_insta_extend;
@@ -266,7 +392,7 @@ class TelegramController extends ApiController {
         // Handling intermediate states
         switch ($tel_user->state) {
             case TelegramController::$state_sms_contacts_new_name:
-                $carry           = ["name" => $tel->message];
+                $carry = ["name" => $tel->message];
                 $tel_user->carry = json_encode($carry);
                 $tel_user->save();
                 $tel->sendMessage(null, "لطفاً شماره همراه مشتری را وارد نمایید:");
@@ -274,11 +400,11 @@ class TelegramController extends ApiController {
                 $tel_user->save();
                 return;
             case TelegramController::$state_sms_contacts_new_mobile:
-                $carry                         = json_decode($tel_user->carry);
-                $smsReceiver                   = new SmsReceiver();
+                $carry = json_decode($tel_user->carry);
+                $smsReceiver = new SmsReceiver();
                 $smsReceiver->telegram_user_id = $tel->chat_id;
-                $smsReceiver->name             = $carry->name;
-                $smsReceiver->mobile           = $tel->message;
+                $smsReceiver->name = $carry->name;
+                $smsReceiver->mobile = $tel->message;
                 $smsReceiver->save();
                 $this->resetTelegramUser($tel_user);
                 $tel_user->state = TelegramController::$state_sms;
