@@ -283,6 +283,12 @@ class TelegramController extends ApiController {
                         $tel->sendKeyboardMessage(null, "امکان فالو کردن را تعیین نمایید:",
                                                   TelegramController::$btn_active);
                         return;
+                    case TelegramController::$cmd_cancel:
+                        $tel_user->state = TelegramController::$state_insta;
+                        $tel_user->save();
+                        $tel->sendKeyboardMessage(null, "فرآیند لغو شد.",
+                                                  TelegramController::$btn_insta);
+                        return;
                     default:
                         $tel->sendKeyboardMessage(null, "پیام قابل فهم نیست.", TelegramController::$btn_insta_update);
                 }
@@ -346,8 +352,10 @@ class TelegramController extends ApiController {
                     return;
                 }
             case TelegramController::$state_insta_extend:
-                $tel->sendMessage(null, "هنوز پیاده‌سازی نشده است.");
-                return;
+                if ($tel->message != TelegramController::$cmd_cancel)
+                    $tel->sendMessage(null, "هنوز پیاده‌سازی نشده است.");
+                $tel->message = TelegramController::$cmd_insta;
+                break;
         }
         // Handling commands
         switch ($tel->message) {
