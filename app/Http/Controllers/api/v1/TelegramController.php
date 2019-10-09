@@ -341,7 +341,7 @@ class TelegramController extends ApiController {
                     break;
                 } else {
                     $tel->sendKeyboardMessage(null, "پیام قابل فهم نیست.",
-                                              TelegramController::$btn_insta_update);
+                                              TelegramController::$btn_active);
                     return;
                 }
             case TelegramController::$state_insta_update_follow:
@@ -358,7 +358,7 @@ class TelegramController extends ApiController {
                     break;
                 } else {
                     $tel->sendKeyboardMessage(null, "پیام قابل فهم نیست.",
-                                              TelegramController::$btn_insta_update);
+                                              TelegramController::$btn_active);
                     return;
                 }
             case TelegramController::$state_insta_extend:
