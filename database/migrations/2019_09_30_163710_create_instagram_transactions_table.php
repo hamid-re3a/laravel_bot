@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateMoneyTransactionsTable extends Migration
+class CreateInstagramTransactionsTable extends Migration
 {
     /**
      * Run the migrations.
