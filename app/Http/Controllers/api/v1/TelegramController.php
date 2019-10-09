@@ -355,10 +355,10 @@ class TelegramController extends ApiController {
                 $account = InstagramAccount::where("telegram_user_id", $tel_user->telegram_id)->firstOrFail();
                 $msg = "نام کاربری: " . $account->username;
                 $msg .= "\nزمان پایان اعتبار: " . (is_null($account->paid_until) ? "غیرفعال" : $account->paid_until);
-                $msg .= "\nامکان کامنت‌گذاری: " . $account->comment ? "فعال" : "غیرفعال";
-                $msg .= "\nامکان فالو کردن: " . $account->follow ? "فعال" : "غیرفعال";
-                $msg .= "\nصحت نام کاربری و رمز عبور: " . $account->is_credentials_valid ? "صحیح" : "ناصحیح (یا هنوز بررسی نشده)";
-                $msg .= "\nقعال بودن اعتبارسنجی دو مرحله‌ای: " . $account->is_two_step_verification_valid ? "غیرفعال" : "فعال (یا هنوز بررسی نشده)";
+                $msg .= "\nامکان کامنت‌گذاری: " . ($account->comment ? "فعال" : "غیرفعال");
+                $msg .= "\nامکان فالو کردن: " . ($account->follow ? "فعال" : "غیرفعال");
+                $msg .= "\nصحت نام کاربری و رمز عبور: " . ($account->is_credentials_valid ? "صحیح" : "ناصحیح (یا هنوز بررسی نشده)");
+                $msg .= "\nقعال بودن اعتبارسنجی دو مرحله‌ای: " . ($account->is_two_step_verification_valid ? "غیرفعال" : "فعال (یا هنوز بررسی نشده)");
                 $tel->sendKeyboardMessage(null, $msg,
                                           TelegramController::$btn_insta);
                 break;
