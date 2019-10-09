@@ -4,6 +4,7 @@ namespace App\Http\Controllers\api\v1;
 
 
 use App\InstagramAccount;
+use App\InstagramTransaction;
 use App\SmsReceiver;
 use App\TelegramUser;
 use Carbon\Carbon;
@@ -362,10 +363,26 @@ class TelegramController extends ApiController {
                     return;
                 }
             case TelegramController::$state_insta_extend:
-                if ($tel->message != TelegramController::$cmd_cancel)
-                    $tel->sendKeyboardMessage(null, "هنوز پیاده‌سازی نشده است.",
-                                              TelegramController::$btn_insta);
-                else {
+                if ($tel->message != TelegramController::$cmd_cancel) {
+                    $pic = $tel->photo;
+                    if (is_null($pic))
+                        $tel->sendKeyboardMessage(null, "لطفاً تصویر بفرستید.",
+                                                  TelegramController::$btn_insta);
+                    else {
+                        $tel->sendMessage(null, "[DEBUG] photo received.");
+                        $tel->savePhoto($pic, "/dokan_bot_pics", $tel->chat_id . "-" . $pic);
+                        $account = InstagramAccount::where("telegram_user_id", $tel_user->telegram_id)->firstOrFail();
+                        $trans = new InstagramTransaction();
+                        $trans->telegram_user_id = $tel->chat_id;
+                        $trans->instagram_id = $account->id;
+                        $trans->amount = -1;
+                        $trans->description = "بابت تمدید سرویس افزایش فالوور اینستاگرام";
+                        $trans->photo = $pic;
+                        $trans->save();
+                        $tel->sendKeyboardMessage(null, "با تشکر از پرداخت شما. پرداخت شما در انتظار تأیید ادمین می‌باشد.",
+                                                  TelegramController::$btn_insta);
+                    }
+                } else {
                     $tel_user->state = TelegramController::$state_insta;
                     $tel_user->save();
                     $tel->sendKeyboardMessage(null, "فرآیند لغو شد.",
