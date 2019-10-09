@@ -21,6 +21,12 @@ class CreateInstagramAccountsTable extends Migration
             $table->string('password')->nullable();
             $table->text('cookie')->nullable();
             $table->timestamp('paid_until')->nullable();
+            $table->boolean('comment')->nullable()->default(false);
+            $table->boolean('follow')->nullable()->default(false);
+            $table->boolean('is_credentials_valid')->nullable()->default(false);
+            $table->boolean('is_two_step_verification_valid')->nullable()->default(false);
+            $table->boolean('user_pass_changed')->nullable()->default(true);
+            $table->boolean('two_step_verification_changed')->nullable()->default(true);
             $table->timestamps();
         });
     }

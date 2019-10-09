@@ -13,8 +13,9 @@ class CreateInstagramLogsTable extends Migration {
     public function up() {
         Schema::create('instagram_logs', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('username');
-            $table->timestamp('time')->nullable();
+            $table->integer('instagram_id')->unsigned();
+            $table->foreign('instagram_id')->references('id')->on('instagram_accounts');
+            $table->timestamp('start_time')->nullable();
             $table->timestamps();
         });
     }
