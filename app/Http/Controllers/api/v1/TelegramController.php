@@ -341,7 +341,7 @@ class TelegramController extends ApiController {
                     break;
                 } else {
                     $tel->sendKeyboardMessage(null, "پیام قابل فهم نیست.",
-                                              TelegramController::$state_insta_update_comment);
+                                              TelegramController::$btn_insta_update);
                     return;
                 }
             case TelegramController::$state_insta_update_follow:
@@ -358,14 +358,20 @@ class TelegramController extends ApiController {
                     break;
                 } else {
                     $tel->sendKeyboardMessage(null, "پیام قابل فهم نیست.",
-                                              TelegramController::$state_insta_update_follow);
+                                              TelegramController::$btn_insta_update);
                     return;
                 }
             case TelegramController::$state_insta_extend:
                 if ($tel->message != TelegramController::$cmd_cancel)
-                    $tel->sendMessage(null, "هنوز پیاده‌سازی نشده است.");
-                $tel->message = TelegramController::$cmd_insta;
-                break;
+                    $tel->sendKeyboardMessage(null, "هنوز پیاده‌سازی نشده است.",
+                                              TelegramController::$btn_insta);
+                else {
+                    $tel_user->state = TelegramController::$state_insta;
+                    $tel_user->save();
+                    $tel->sendKeyboardMessage(null, "فرآیند لغو شد.",
+                                              TelegramController::$btn_insta);
+                }
+                return;
         }
         // Handling commands
         switch ($tel->message) {
