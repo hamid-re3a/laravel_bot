@@ -193,7 +193,7 @@ class TelegramController extends ApiController {
                     $account->save();
                     $tel_id = $trans->telegram_user_id;
                     $tel->sendMessage($tel_id, "پرداخت شما توسط ادمین تأیید شد.");
-                    $msg = "زمان پایان اعتبار: " . (is_null($account->paid_until) ? "غیرفعال" : $account->paid_until);
+                    $msg = "زمان پایان اعتبار: " . (is_null($account->paid_until) ? "غیرفعال" : "\n" . $account->paid_until);
                     $tel->sendMessage($tel_id, $msg);
                     break;
                 case TelegramController::$cmd_instagramTransactionDeny:
@@ -450,7 +450,7 @@ class TelegramController extends ApiController {
             case TelegramController::$cmd_insta_detail:
                 $account = InstagramAccount::where("telegram_user_id", $tel_user->telegram_id)->firstOrFail();
                 $msg = "نام کاربری: " . $account->username;
-                $msg .= "\nزمان پایان اعتبار: " . (is_null($account->paid_until) ? "غیرفعال" : $account->paid_until);
+                $msg .= "\nزمان پایان اعتبار: " . (is_null($account->paid_until) ? "غیرفعال" : "\n" . $account->paid_until);
                 $msg .= "\nامکان کامنت‌گذاری: " . ($account->comment ? "فعال" : "غیرفعال");
                 $msg .= "\nامکان فالو کردن: " . ($account->follow ? "فعال" : "غیرفعال");
                 $msg .= "\nصحت نام کاربری و رمز عبور: " . ($account->is_credentials_valid ? "صحیح" : "ناصحیح (یا هنوز بررسی نشده)");
