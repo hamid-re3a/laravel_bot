@@ -20,6 +20,7 @@ class TelegramSdk
     public $longitude = null;
     public $phone_number = null;
     public $type = null;
+    public $callback_data = null;
 
     public function __construct($api_key, $chat_id = 68331230)
     {
@@ -42,6 +43,7 @@ class TelegramSdk
         $this->latitude = null;
         $this->longitude = null;
         $this->phone_number = null;
+        $this->callback_data = null;
 
         if (isset($update['callback_query']["message"]["chat"]["id"])){
             $this->type = "callback_query";
@@ -59,6 +61,8 @@ class TelegramSdk
 
         if (isset($update['callback_query']["message"]["message_id"]))
             $this->message_id = $update['callback_query']["message"]["message_id"];
+        if (isset($update['callback_query']["data"]))
+            $this->callback_data = $update['callback_query']["data"];
 
         if (isset($update["message"]["chat"]["id"])){
             $this->type = "message";
@@ -81,8 +85,6 @@ class TelegramSdk
         $this->message = '';
         if (isset($update["message"]["text"]))
             $this->message = $update["message"]["text"];
-        else if (isset($update['callback_query']["message"]["text"]))
-            $this->message = $update['callback_query']["message"]["text"];
 
         if (isset($update["message"]["location"]["latitude"]))
             $this->latitude = $update["message"]["location"]["latitude"];

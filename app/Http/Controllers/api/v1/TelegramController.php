@@ -57,13 +57,10 @@ class TelegramController extends ApiController {
     private static $admin_chat_id = "67015729";
 
     public function dokan() {
-        
-        
+        $update = @file_get_contents("php://input");
+        $telegram = new TelegramSdk(env('TELEGRAM_DOKAN_API_KEY'));
+        $telegram->intitilize($update);
 
-            $update = @file_get_contents("php://input");
-            $telegram = new TelegramSdk(env('TELEGRAM_DOKAN_API_KEY'));
-            $telegram->intitilize($update);
-        
         try {
             TelegramController::$btn_init = [[TelegramController::$cmd_insta],
                                              [TelegramController::$cmd_help, TelegramController::$cmd_contact]];
@@ -175,10 +172,8 @@ class TelegramController extends ApiController {
     }
 
     private function handleCallbackQuery($tel) {
-        $tel->sendMessage(null, "CallbackQuery");
-        $tel->sendMessage(null, $tel->message);
-        //preg_match('/(?P<key>.+)@(?P<name>\w+):(?P<digit>\d+)/', $tel->message, $matches);
-        preg_match('/(?P<key>.+)/', $tel->message, $matches);
+        $tel->sendMessage(null, $tel->callback_data);
+        preg_match('/(?P<key>.+)@(?P<name>\w+):(?P<digit>\d+)/', $tel->callback_data, $matches);
         $tel->sendMessage(null, json_encode($matches));
     }
 
@@ -379,7 +374,7 @@ class TelegramController extends ApiController {
                                                   TelegramController::$btn_cancel);
                     else {
                         $picture_name = end($pic)["file_id"] . ".jpg";
-                        $tel->savePhoto($pic, "/images/payment/dokan_bot_pics/{$tel->chat_id}",$picture_name);
+                        $tel->savePhoto($pic, "/images/payment/dokan_bot_pics/{$tel->chat_id}", $picture_name);
                         $account = InstagramAccount::where("telegram_user_id", $tel_user->telegram_id)->firstOrFail();
                         $trans = new InstagramTransaction();
                         $trans->telegram_user_id = $tel->chat_id;
