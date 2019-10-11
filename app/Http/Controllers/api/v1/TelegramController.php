@@ -405,8 +405,7 @@ class TelegramController extends ApiController {
                         $picture_name = end($pic)["file_id"] . ".jpg";
                         $tel->savePhoto($pic, "/images/payment/dokan_bot_pics/{$tel->chat_id}", $picture_name);
                         $account = InstagramAccount::where("telegram_user_id", $tel_user->telegram_id)->firstOrFail();
-                        $trans = new InstagramTransaction();
-                        $trans->telegram_user_id = $tel->chat_id;
+                        $trans = InstagramTransaction::create(["telegram_id", $tel->chat_id]);
                         $trans->instagram_id = $account->id;
                         $trans->amount = -1;
                         $trans->description = "بابت تمدید سرویس افزایش فالوور اینستاگرام";
