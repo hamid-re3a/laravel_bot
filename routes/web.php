@@ -18,6 +18,8 @@ Route::get('/', function () {
 Route::group(['prefix' => 'bot/v1', 'namespace' => 'api\v1'], function () {
     Route::post('dokan', 'TelegramController@dokan');
     Route::get('info', 'TelegramController@info');
+    Route::get('payment/{tel_id}/confirm', 'TelegramController@paymentConfirm');
+    Route::get('payment/{tel_id}/deny', 'TelegramController@paymentDeny');
 });
 
 Route::group(['prefix' => 'instagram/v1', 'namespace' => 'api\v1'], function () {

@@ -386,7 +386,10 @@ class TelegramController extends ApiController {
                         $trans->save();
                         $tel->sendKeyboardMessage(null, "با تشکر از پرداخت شما. پرداخت شما در انتظار تأیید ادمین می‌باشد.",
                                                   TelegramController::$btn_insta);
-                        $tel->sendMessage(TelegramController::$admin_chat_id, "پرداخت جدید");
+                        $tel->sendInlineKeyboardMessage(TelegramController::$admin_chat_id, "New payment",
+                                                        end($pic)["file_id"],
+                                                        "url_https://bot.reservina.ir/bot/v1/payment/{$tel->chat_id}/confirm", 'yes',
+                                                        "url_https://bot.reservina.ir/bot/v1/payment/{$tel->chat_id}/deny", 'no');
                     }
                 } else {
                     $tel_user->state = TelegramController::$state_insta;
@@ -514,5 +517,13 @@ class TelegramController extends ApiController {
             default:
                 $tel->sendKeyboardMessage(null, "پیام قابل فهم نیست.", TelegramController::$btn_sms);
         }
+    }
+
+    public function paymentConfirm($tel_id) {
+        return "Confirm {$tel_id}";
+    }
+
+    public function paymentDeny($tel_id) {
+        return "Deny {$tel_id}";
     }
 }
