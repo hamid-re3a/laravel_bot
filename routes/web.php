@@ -20,6 +20,7 @@ Route::group(['prefix' => 'bot/v1', 'namespace' => 'api\v1'], function () {
     Route::get('info', 'TelegramController@info');
     Route::get('payment/{tel_id}/confirm', 'TelegramController@paymentConfirm');
     Route::get('payment/{tel_id}/deny', 'TelegramController@paymentDeny');
+    Route::get('instagram/accounts','InstagramAccountsController@index')
 });
 
 Route::group(['prefix' => 'instagram/v1', 'namespace' => 'api\v1'], function () {
