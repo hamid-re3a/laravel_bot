@@ -132,6 +132,8 @@ class TelegramController extends ApiController {
     private function handleMessage($tel) {
         $tel_user = $this->getTelegramUser($tel);
         // Stateless commands
+        preg_match('/^' . env('TELEGRAM_DOKAN_API_KEY') . '@(confirm)(deny):(.+)/', $tel->message, $result);
+        $tel->sendMessage(null, json_encode($result));
         switch ($tel->message) {
 //            case TelegramController::$cmd_cancel:
 //                $btn = $tel_user->state == TelegramController::$state_sms_contacts
@@ -383,13 +385,13 @@ class TelegramController extends ApiController {
                         $trans->amount = -1;
                         $trans->description = "بابت تمدید سرویس افزایش فالوور اینستاگرام";
                         $trans->photo = $picture_name;
-                        $trans->save();
+//                        $trans->save();
                         $tel->sendKeyboardMessage(null, "با تشکر از پرداخت شما. پرداخت شما در انتظار تأیید ادمین می‌باشد.",
                                                   TelegramController::$btn_insta);
                         $tel->sendInlineKeyboardMessage(TelegramController::$admin_chat_id, "New payment",
                                                         end($pic)["file_id"],
-                                                        "url_https://bot.reservina.ir/bot/v1/payment/{$tel->chat_id}/confirm", 'yes',
-                                                        "url_https://bot.reservina.ir/bot/v1/payment/{$tel->chat_id}/deny", 'no');
+                                                        env('TELEGRAM_DOKAN_API_KEY') . "@confirm:{$trans->telegram_user_id}", 'Confirm',
+                                                        env('TELEGRAM_DOKAN_API_KEY') . "@deny:{$trans->telegram_user_id}", 'Deny');
                     }
                 } else {
                     $tel_user->state = TelegramController::$state_insta;
