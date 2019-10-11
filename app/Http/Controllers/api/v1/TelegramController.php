@@ -196,9 +196,11 @@ class TelegramController extends ApiController {
                     break;
             }
             // Removing inline keyboard
-            $msg = $tel->callback_caption . "\nFinal result: "
-                   . $command == TelegramController::$cmd_instagramTransactionConfirm ? "Confirm" : "Deny";
-            $tel->updateInlineKeyboardMessage($tel->chat_id, $tel->message_id, $msg);
+            $new_msg = $tel->callback_caption . "\nFinal result: "
+                       . ($command == TelegramController::$cmd_instagramTransactionConfirm ? "Confirm" : "Deny");
+//            $tel->updateInlineKeyboardMessage(null, $tel->message_id, $msg);
+//            $tel->updateInlineKeyboardMessage(null, $tel->message_id);
+            $tel->removeInlineKeyboard(null, $tel->message_id, $new_msg);
         }
     }
 

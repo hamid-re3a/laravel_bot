@@ -326,4 +326,16 @@ class TelegramSdk
         @file_get_contents($url);
     }
 
+    public function removeInlineKeyboard($chatId, $messageId, $newMessage) {
+        if(is_null($chatId) || !is_string($chatId))
+            $chatId = $this->chat_id;
+        $url = $this->telegram_url . "editMessageText"
+               . "?chat_id=" . urlencode($chatId)
+               . "&message_id=" . urlencode($messageId)
+               . "&text=" . urlencode($newMessage)
+               . "&parse_mode=HTML"
+               . "&reply_markup=[]";
+        @file_get_contents($url);
+    }
+
 }
