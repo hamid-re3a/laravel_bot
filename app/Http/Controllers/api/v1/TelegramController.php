@@ -54,6 +54,8 @@ class TelegramController extends ApiController {
     private static $btn_sms          = [];
     private static $btn_sms_contacts = [];
 
+    private static $admin_chat_id = "67015729";
+
     public function dokan() {
         
         
@@ -373,9 +375,7 @@ class TelegramController extends ApiController {
                                                   TelegramController::$btn_cancel);
                     else {
                         $picture_name = end($pic)["file_id"] . ".jpg";
-                        $tel->sendMessage(null, "[DEBUG] photo recieved.");
                         $tel->savePhoto($pic, "/images/payment/dokan_bot_pics/{$tel->chat_id}",$picture_name);
-                        $tel->sendMessage(null, "[DEBUG] photo saved.");
                         $account = InstagramAccount::where("telegram_user_id", $tel_user->telegram_id)->firstOrFail();
                         $trans = new InstagramTransaction();
                         $trans->telegram_user_id = $tel->chat_id;
@@ -386,6 +386,7 @@ class TelegramController extends ApiController {
                         $trans->save();
                         $tel->sendKeyboardMessage(null, "با تشکر از پرداخت شما. پرداخت شما در انتظار تأیید ادمین می‌باشد.",
                                                   TelegramController::$btn_insta);
+                        $tel->sendMessage(TelegramController::$admin_chat_id, "پرداخت جدید");
                     }
                 } else {
                     $tel_user->state = TelegramController::$state_insta;
