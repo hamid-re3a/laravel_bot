@@ -81,6 +81,8 @@ class TelegramSdk
         $this->message = '';
         if (isset($update["message"]["text"]))
             $this->message = $update["message"]["text"];
+        else if (isset($update['callback_query']["message"]["text"]))
+            $this->message = $update['callback_query']["message"]["text"];
 
         if (isset($update["message"]["location"]["latitude"]))
             $this->latitude = $update["message"]["location"]["latitude"];

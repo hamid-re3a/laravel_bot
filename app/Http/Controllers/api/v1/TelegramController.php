@@ -132,8 +132,6 @@ class TelegramController extends ApiController {
     private function handleMessage($tel) {
         $tel_user = $this->getTelegramUser($tel);
         // Stateless commands
-        preg_match('/^' . env('TELEGRAM_DOKAN_API_KEY') . '@(confirm)(deny):(.+)/', $tel->message, $result);
-        $tel->sendMessage(null, json_encode($result));
         switch ($tel->message) {
 //            case TelegramController::$cmd_cancel:
 //                $btn = $tel_user->state == TelegramController::$state_sms_contacts
@@ -177,7 +175,11 @@ class TelegramController extends ApiController {
     }
 
     private function handleCallbackQuery($tel) {
-        $tel->sendMessage(null, "خطای نامشخص");
+        $tel->sendMessage(null, "CallbackQuery");
+        $tel->sendMessage(null, $tel->message);
+        //preg_match('/(?P<key>.+)@(?P<name>\w+):(?P<digit>\d+)/', $tel->message, $matches);
+        preg_match('/(?P<key>.+)/', $tel->message, $matches);
+        $tel->sendMessage(null, json_encode($matches));
     }
 
     private function state_init($tel, $tel_user) {
