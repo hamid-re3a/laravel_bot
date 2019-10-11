@@ -185,8 +185,16 @@ class TelegramController extends ApiController {
                     $trans = InstagramTransaction::where('id', $trans_id)->firstOrFail();
                     $trans->confirm = true;
                     $trans->save();
+                    $account = InstagramAccount::where('id', $trans->instagram_id)->firstOrFail();
+                    if (is_null($account->paid_until))
+                        $account->paid_until = Carbon::now()->addDays(30);
+                    else
+                        $account->paid_until = Carbon::parse($account->paid_until)->addDays(30);
+                    $account->save();
                     $tel_id = $trans->telegram_user_id;
                     $tel->sendMessage($tel_id, "پرداخت شما توسط ادمین تأیید شد.");
+                    $msg = "زمان پایان اعتبار: " . (is_null($account->paid_until) ? "غیرفعال" : $account->paid_until);
+                    $tel->sendMessage($tel_id, $msg);
                     break;
                 case TelegramController::$cmd_instagramTransactionDeny:
                     $trans_id = $payload;
