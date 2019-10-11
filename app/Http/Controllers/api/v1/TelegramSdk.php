@@ -333,8 +333,12 @@ class TelegramSdk
                . "?chat_id=" . urlencode($chatId)
                . "&message_id=" . urlencode($messageId)
                . "&text=" . urlencode($newMessage)
-               . "&parse_mode=HTML"
-               . "&reply_markup=" . array("inline_keyboard" => []);
+               . "&parse_mode=HTML";
+        @file_get_contents($url);
+        $url = $this->telegram_url . "editMessageReplyMarkup"
+               . "?chat_id=" . urlencode($chatId)
+               . "&message_id=" . urlencode($messageId)
+               . "&reply_markup=" . "{\"inline_keyboard\": []}";
         @file_get_contents($url);
     }
 
