@@ -334,7 +334,7 @@ class TelegramSdk
                . "&message_id=" . urlencode($messageId)
                . "&text=" . urlencode($newMessage)
                . "&parse_mode=HTML"
-               . "&reply_markup=[]";
+               . "&reply_markup=" . array("inline_keyboard" => []);
         @file_get_contents($url);
     }
 
