@@ -94,14 +94,21 @@ class TelegramSdk
 
 
 
-    public function savePhoto($file_id, $image_path = "/pics", $file_name = "temp_file.jpg")
+    public function savePhoto($file, $image_path = "/pics", $file_name = "temp_file.jpg")
     {
+        $file_id = "";
+        if(is_array($file)){
+            $file_id = end($file)["file_id"];
+            
+        } else{
+            $file_id = $file;
+        }
+        // $this->sendMessage(null, "[DEBUG] photo received $file_id.");
         $url = $this->telegram_url . "getFile?file_id=$file_id";
 
-        $result = @file_get_contents($url);
+        $result = file_get_contents($url);
 
         $result_json = json_decode($result, TRUE);
-
         if (isset($result_json['result']['file_path'])) {
 
             $image_url = $this->telegram_url . '/' . $result_json['result']['file_path'];
@@ -109,12 +116,13 @@ class TelegramSdk
                 mkdir(public_path() . '/' . $image_path . '/', 0777, true);
 
             $data = @file_get_contents($image_url);
-            if (!$data === false) {
+            // if (!$data === false) {
+                
                 @file_put_contents(public_path() . '/' . $image_path . '/' . $file_name, $data);
                 return true;
-            } else {
-                return false;
-            }
+            // } else {
+                // return false;
+            // }
 
 
         } else {
@@ -297,7 +305,8 @@ class TelegramSdk
 
     public function sendMessage($chatId, $message)
     {
-        if(is_null($chatId)){
+        
+        if(is_null($chatId) || !is_string($chatId)){
             $chatId = $this->chat_id;
         }
 

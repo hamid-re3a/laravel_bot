@@ -55,6 +55,13 @@ class TelegramController extends ApiController {
     private static $btn_sms_contacts = [];
 
     public function dokan() {
+        
+        
+
+            $update = @file_get_contents("php://input");
+            $telegram = new TelegramSdk(env('TELEGRAM_DOKAN_API_KEY'));
+            $telegram->intitilize($update);
+        
         try {
             TelegramController::$btn_init = [[TelegramController::$cmd_insta],
                                              [TelegramController::$cmd_help, TelegramController::$cmd_contact]];
@@ -79,10 +86,6 @@ class TelegramController extends ApiController {
                                                       TelegramController::$cmd_sms_contacts_remove],
                                                      [TelegramController::$cmd_cancel]];
 
-            $update = @file_get_contents("php://input");
-            $telegram = new TelegramSdk(env('TELEGRAM_DOKAN_API_KEY'));
-            $telegram->intitilize($update);
-
             switch ($telegram->type) {
                 case "message":
                     $this->handleMessage($telegram);
@@ -106,8 +109,8 @@ class TelegramController extends ApiController {
     private function getTelegramUser($tel) {
         $tel_user = TelegramUser::where("telegram_id", $tel->chat_id)->first();
         if (is_null($tel_user)) {
-            $tel_user = new TelegramUser();
-            $tel_user->telegram_id = $tel->chat_id;
+            $tel_user = TelegramUser::create(["telegram_id", $tel->chat_id]);
+            //$tel_user->telegram_id = $tel->chat_id;
             $tel_user->state = TelegramController::$state_init;
             $tel_user->carry = "";
         }
@@ -369,8 +372,9 @@ class TelegramController extends ApiController {
                         $tel->sendKeyboardMessage(null, "لطفاً تصویر بفرستید.",
                                                   TelegramController::$btn_cancel);
                     else {
-                        $tel->sendMessage(null, "[DEBUG] photo received.");
-                        $tel->savePhoto($pic, "/dokan_bot_pics", $tel->chat_id . "-" . $pic);
+                        $picture_name = end($pic)["file_id"] . ".jpg";
+                        $tel->sendMessage(null, "[DEBUG] photo recieved.");
+                        $tel->savePhoto($pic, "/images/payment/dokan_bot_pics/{$tel->chat_id}",$picture_name);
                         $tel->sendMessage(null, "[DEBUG] photo saved.");
                         $account = InstagramAccount::where("telegram_user_id", $tel_user->telegram_id)->firstOrFail();
                         $trans = new InstagramTransaction();
@@ -378,7 +382,7 @@ class TelegramController extends ApiController {
                         $trans->instagram_id = $account->id;
                         $trans->amount = -1;
                         $trans->description = "بابت تمدید سرویس افزایش فالوور اینستاگرام";
-                        $trans->photo = $pic;
+                        $trans->photo = $picture_name;
                         $trans->save();
                         $tel->sendKeyboardMessage(null, "با تشکر از پرداخت شما. پرداخت شما در انتظار تأیید ادمین می‌باشد.",
                                                   TelegramController::$btn_insta);
