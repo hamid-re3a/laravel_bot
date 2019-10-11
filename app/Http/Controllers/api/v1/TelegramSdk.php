@@ -21,6 +21,7 @@ class TelegramSdk
     public $phone_number = null;
     public $type = null;
     public $callback_data = null;
+    public $callback_caption = null;
 
     public function __construct($api_key, $chat_id = 68331230)
     {
@@ -44,6 +45,7 @@ class TelegramSdk
         $this->longitude = null;
         $this->phone_number = null;
         $this->callback_data = null;
+        $this->callback_caption = null;
 
         if (isset($update['callback_query']["message"]["chat"]["id"])){
             $this->type = "callback_query";
@@ -63,6 +65,8 @@ class TelegramSdk
             $this->message_id = $update['callback_query']["message"]["message_id"];
         if (isset($update['callback_query']["data"]))
             $this->callback_data = $update['callback_query']["data"];
+        if (isset($update['callback_query']["message"]["caption"]))
+            $this->callback_caption = $update['callback_query']["message"]["caption"];
 
         if (isset($update["message"]["chat"]["id"])){
             $this->type = "message";
@@ -211,7 +215,9 @@ class TelegramSdk
     }
 
 
-    public function updateInlineKeyboardMessage($chatId, $messageId, $message = null, $callback_query_id = null, $popup_message = null, $column_number = 2)
+    public function updateInlineKeyboardMessage($chatId, $messageId, $message = null,
+                                                $callback_query_id = null, $popup_message = null,
+                                                $column_number = 2)
     {
         if(is_null($chatId)){
             $chatId = $this->chat_id;
