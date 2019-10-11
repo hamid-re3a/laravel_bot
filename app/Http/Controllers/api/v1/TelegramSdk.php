@@ -329,10 +329,10 @@ class TelegramSdk
     public function removeInlineKeyboard($chatId, $messageId, $newMessage) {
         if(is_null($chatId) || !is_string($chatId))
             $chatId = $this->chat_id;
-        $url = $this->telegram_url . "editMessageText"
+        $url = $this->telegram_url . "editMessageCaption"
                . "?chat_id=" . urlencode($chatId)
                . "&message_id=" . urlencode($messageId)
-               . "&text=" . urlencode($newMessage)
+               . "&caption=" . urlencode($newMessage)
                . "&parse_mode=HTML";
         @file_get_contents($url);
         $url = $this->telegram_url . "editMessageReplyMarkup"
